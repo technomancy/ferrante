@@ -11,8 +11,7 @@ import android.graphics.Path
 import android.hardware.SensorListener
 import android.hardware.SensorManager
 
-class Navigate < Activity
-  @tag = "Navigate"
+class Navigator < Activity
   def onCreate(state)
     super(state)
     @sensors = SensorManager(getSystemService(Context.SENSOR_SERVICE))
@@ -21,7 +20,7 @@ class Navigate < Activity
   end
 
   def onResume
-    Log.d(@tag, "Resumed")
+    Log.d("Ferrante Nav", "Resumed")
     super()
     @sensors.registerListener(@listener,
                               SensorManager.SENSOR_ORIENTATION,
@@ -29,7 +28,7 @@ class Navigate < Activity
   end
 
   def onStop
-    Log.d(@tag, "Stopped")
+    Log.d("Ferrante Nav", "Stopped")
     super()
     @sensors.unregisterListener(@listener)
   end
@@ -40,7 +39,7 @@ class CompassListener
 
   def onSensorChanged(sensor, values)
     @values = values
-    @view.invalidate
+    # @view.invalidate
   end
 end
 
