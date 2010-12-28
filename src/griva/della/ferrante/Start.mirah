@@ -24,28 +24,35 @@ class Start < Activity
   def onCreate(state)
     super state
     @outer = LinearLayout.new(self).setOrientation(LinearLayout.VERTICAL)
-    @exec = Executors.newSingleThreadExecutor
     this = self
     @start_button = add_button("Start")
-    @start_button.setMinimumHeight(100)
+    @start_button.setMinimumHeight(75)
     @start_button.setOnClickListener {|v| this.start }
 
     setContentView(@outer)
   end
 
+
   def start
     @start_button.setText("Starting...")
     @start_button.setEnabled(false)
     Log.i("Ferrante", "Clicked Start")
-    client = AndroidHttpClient.newInstance("Ferrante")
-    
-    future = @exec.submit {client.execute(HttpPost.new("http://p.hagelb.org/start"))}
+    http = AndroidHttpClient.newInstance("Ferrante")
+    this = self
 
-    begin
-      wait_for_follower(future.get(5, TimeUnit.SECONDS))
-    rescue => e
-      Log.w("Ferrante", "Couldn't start.")
+    # TODO: this is awful; should use futures
+    thread = Thread.new do
+      this.response = http.execute(HttpPost.new("http://p.hagelb.org/start"))
+      Log.i("Ferrante", "received response")
     end
+
+    thread.start && thread.join
+
+    wait_for_follower(@response)
+  end
+
+  def response=(r:HttpResponse)
+    @response = r
   end
 
   def wait_for_follower(response:HttpResponse)
@@ -75,6 +82,8 @@ class Start < Activity
 
   def poll(link:String)
     @start_button.setText("Waiting for follower...")
+    # wait_thread = Thread.new do
+    # end
   end
 
   def copy
@@ -83,8 +92,8 @@ class Start < Activity
   def cancel
   end
 
-  def onDestroy
-    @exec.shutdownNow
-    super
-  end
+  # def onDestroy
+  #   @exec.shutdownNow
+  #   super
+  # end
 end
