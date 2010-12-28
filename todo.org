@@ -1,20 +1,21 @@
 * Client
 ** Start Activity
-*** start button
-*** show link
-*** wait for response (poll)
-*** cancel invitation
+*** DONE start button
+*** DONE show link
+*** DONE cancel invitation
+*** DONE wait for response (poll)
+*** TODO move on to navigate/locator when confirmed
 ** Navigate Activity
-*** point compass north
-*** point to fixed location
-*** move target point
-** Locator Service
-*** get target from server
-*** send location to server
-*** do this periodically
+*** TODO point compass north
+*** TODO point to fixed location
+*** TODO move target point
+** Locate Service
+*** TODO get target from server
+*** TODO send location to server
+*** TODO do this periodically
 ** Follow Activity
-*** confirm
-*** cancel
+*** TODO confirm
+*** TODO cancel
 
 * Server
 ** POST /start
@@ -49,3 +50,13 @@
 ** follower_ping_at
 ** ended_at
 ** ended_by
+
+* Mirah Bugs?
+** CONSTANTS = "foo"
+** @@class_variables.nil?
+** futures
+** loop => while true =\
+** can't override finish
+* Ugly things to clean up
+** Auto-generate resources from yaml, etc.
+** all the this=self stuff

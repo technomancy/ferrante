@@ -1,8 +1,12 @@
 import android.app.Activity
 import android.util.Log
+import android.text.ClipboardManager
+import android.content.Context
 
 import android.net.http.AndroidHttpClient
+import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpDelete
 import org.apache.http.HttpResponse
 import org.json.JSONObject
 
@@ -20,11 +24,16 @@ import android.view.View
 class Start < Activity
   # USER_AGENT = "Ferrante (http://github.com/technomancy/ferrante)"
   # TAG = "Ferrante/Start"
+  @@user_agent = "Ferrante"
 
   def onCreate(state)
     super state
-    @outer = LinearLayout.new(self).setOrientation(LinearLayout.VERTICAL)
+    @outer = LinearLayout.new(self)
+    @outer.setOrientation(LinearLayout.VERTICAL)
+    @http = AndroidHttpClient.newInstance("Ferrante")
+
     this = self
+    # FIXME: switch to resources?
     @start_button = add_button("Start")
     @start_button.setMinimumHeight(75)
     @start_button.setOnClickListener {|v| this.start }
@@ -36,11 +45,11 @@ class Start < Activity
   def start
     @start_button.setText("Starting...")
     @start_button.setEnabled(false)
-    Log.i("Ferrante", "Clicked Start")
-    http = AndroidHttpClient.newInstance("Ferrante")
+
+    http = @http
     this = self
 
-    # TODO: this is awful; should use futures
+    # FIXME: this is awful; should use futures
     thread = Thread.new do
       this.response = http.execute(HttpPost.new("http://p.hagelb.org/start"))
       Log.i("Ferrante", "received response")
@@ -51,6 +60,7 @@ class Start < Activity
     wait_for_follower(@response)
   end
 
+  # FIXME: yeah, switch to futures
   def response=(r:HttpResponse)
     @response = r
   end
@@ -60,11 +70,11 @@ class Start < Activity
     this = self
     stream = response.getEntity.getContent
     payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
-    link = JSONObject.new(payload).getString("link")
-    show_link(link)
+    @link = JSONObject.new(payload).getString("link")
+    show_link(@link)
     add_button("Copy").setOnClickListener {|v| this.copy }
     add_button("Cancel").setOnClickListener {|v| this.cancel }
-    poll(link)
+    poll(@link)
   end
 
   def show_link(link:String)
@@ -73,27 +83,71 @@ class Start < Activity
     @outer.addView @link_text
   end
 
+  def poll(link:String)
+    http = @http
+    link = @link
+    this = self
+    @start_button.setText("Waiting for follower...")
+    @wait_thread = Thread.new do
+      while true do
+        Thread.sleep 10000 # ten seconds
+        code = http.execute(HttpGet.new(link)).getStatusLine.getStatusCode
+        if code == 200
+          this.follow
+        elsif code == 410
+          this.gone
+        elsif code != 204
+          raise "Got unexpected status: #{code}"
+        end
+      end
+    end
+  end
+
+  def onSaveInstanceState(bundle)
+    # TODO: write
+  end
+
+  def onRestoreInstanceState(bundle)
+    # TODO: write
+  end
+
+  def follow
+    # TODO: start locator service
+    # TODO: start navigator activity
+    done
+  end
+
+  def gone
+    # TODO: show message
+    done
+  end
+
+  def copy
+    clipboard = ClipboardManager(getSystemService("clipboard"))
+    clipboard.setText(@link)
+  end
+  
+  def cancel
+    http = @http
+    link = @link
+    thread = Thread.new do
+      http.execute(HttpDelete.new(link))
+    end
+    thread.start
+  ensure
+    done
+  end
+
+  # FIXME: why can't we call this finish and call super?
+  def done
+    @wait_thread.stop if @wait_thread
+    finish
+  end
+
   def add_button(text:String)
     button = Button.new self
     button.setText text
     @outer.addView button
     button
   end
-
-  def poll(link:String)
-    @start_button.setText("Waiting for follower...")
-    # wait_thread = Thread.new do
-    # end
-  end
-
-  def copy
-  end
-
-  def cancel
-  end
-
-  # def onDestroy
-  #   @exec.shutdownNow
-  #   super
-  # end
 end
