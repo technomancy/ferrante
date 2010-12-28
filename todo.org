@@ -1,0 +1,51 @@
+* Client
+** Start Activity
+*** start button
+*** show link
+*** wait for response (poll)
+*** cancel invitation
+** Navigate Activity
+*** point compass north
+*** point to fixed location
+*** move target point
+** Locator Service
+*** get target from server
+*** send location to server
+*** do this periodically
+** Follow Activity
+*** confirm
+*** cancel
+
+* Server
+** POST /start
+   body: {"name": "leader dude"}
+   response: {"link": "http://ferrante-della-griva.appspot.com/8024802"}
+** GET /$TOKEN
+   - Triggers Follow activity
+   - May confirm, which goes to POST
+   - May cancel, which goes to DELETE
+** POST /$TOKEN {"name", "follower dude"}
+   - sets follower_name and followed_at
+** PUT /$TOKEN {"lat": 44.2424, "lng": 133.9014}
+   - sets your lat, lng, ping_at
+   - returns other's lat, lng, name
+** DELETE /$TOKEN {"name": "follower dude"}
+   - confirms name is either leader or follower
+   - sets ended_at, ended_by
+
+* Data Model
+** id
+** leader_token
+** follower_token
+** started_at
+** leader_name
+** followed_at
+** follower_name
+** leader_lat
+** leader_lng
+** leader_ping_at
+** follower_lat
+** follower_lng
+** follower_ping_at
+** ended_at
+** ended_by
