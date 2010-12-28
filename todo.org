@@ -4,8 +4,10 @@
 *** DONE show link
 *** DONE cancel invitation
 *** DONE wait for response (poll)
-*** TODO move on to navigate/locator when confirmed
+*** DONE move on to navigate when confirmed
+*** TODO launch locator when confirmed
 ** Navigate Activity
+*** DONE show compass
 *** TODO point compass north
 *** TODO point to fixed location
 *** TODO move target point
@@ -57,6 +59,8 @@
 ** futures
 ** loop => while true =\
 ** can't override finish
+** can't infer double => float
+** can't refer to nested constants
 * Ugly things to clean up
 ** Auto-generate resources from yaml, etc.
 ** all the this=self stuff

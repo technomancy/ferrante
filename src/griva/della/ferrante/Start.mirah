@@ -2,6 +2,9 @@ import android.app.Activity
 import android.util.Log
 import android.text.ClipboardManager
 import android.content.Context
+import android.app.AlertDialog
+import android.os.Message
+import android.content.Intent
 
 import android.net.http.AndroidHttpClient
 import org.apache.http.client.methods.HttpGet
@@ -15,11 +18,12 @@ import java.io.BufferedReader
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Button
 import android.widget.EditText
-import android.view.View
 
+import griva.della.ferrante.Navigator
 
 class Start < Activity
   # USER_AGENT = "Ferrante (http://github.com/technomancy/ferrante)"
@@ -32,12 +36,21 @@ class Start < Activity
     @outer.setOrientation(LinearLayout.VERTICAL)
     @http = AndroidHttpClient.newInstance("Ferrante")
 
+    # FIXME: support horizontal view
+    # FIXME: switch to resources for strings?
+    @title = TextView.new(self)
+    @title.setGravity(1)
+    @title.setTextSize(float(40)).setText("Ferrante")
+    @outer.addView(@title)
+
     this = self
-    # FIXME: switch to resources?
     @start_button = add_button("Start")
     @start_button.setMinimumHeight(75)
     @start_button.setOnClickListener {|v| this.start }
 
+    # for debugging only; remove
+    add_button("Navigate").setOnClickListener {|v| this.navigate }
+    
     setContentView(@outer)
   end
 
@@ -71,16 +84,11 @@ class Start < Activity
     stream = response.getEntity.getContent
     payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
     @link = JSONObject.new(payload).getString("link")
-    show_link(@link)
+    @outer.addView(EditText.new(self).setText(@link))
+
     add_button("Copy").setOnClickListener {|v| this.copy }
     add_button("Cancel").setOnClickListener {|v| this.cancel }
     poll(@link)
-  end
-
-  def show_link(link:String)
-    @link_text = EditText.new self
-    @link_text.setText link
-    @outer.addView @link_text
   end
 
   def poll(link:String)
@@ -93,7 +101,10 @@ class Start < Activity
         Thread.sleep 10000 # ten seconds
         code = http.execute(HttpGet.new(link)).getStatusLine.getStatusCode
         if code == 200
-          this.follow
+          # TODO: start locator
+          this.navigate
+          # TODO: back from navigate shouldn't go to start
+          this.finish
         elsif code == 410
           this.gone
         elsif code != 204
@@ -103,22 +114,14 @@ class Start < Activity
     end
   end
 
-  def onSaveInstanceState(bundle)
-    # TODO: write
-  end
-
-  def onRestoreInstanceState(bundle)
-    # TODO: write
-  end
-
-  def follow
-    # TODO: start locator service
-    # TODO: start navigator activity
-    done
+  def navigate
+    startActivity(Intent.new(self, Navigator.class))
   end
 
   def gone
-    # TODO: show message
+    # TODO: this breaks hard
+    dialog = AlertDialog.new(self).setTitle("Gone")
+    dialog.setMessage "The other person cancelled."
     done
   end
 
@@ -149,5 +152,13 @@ class Start < Activity
     button.setText text
     @outer.addView button
     button
+  end
+
+  def onSaveInstanceState(bundle)
+    # TODO: write
+  end
+
+  def onRestoreInstanceState(bundle)
+    # TODO: write
   end
 end
