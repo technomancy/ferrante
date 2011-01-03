@@ -12,23 +12,39 @@ import android.hardware.SensorListener
 import android.hardware.SensorManager
 
 class Navigator < Activity
+  @tag = "Ferrante Nav"
+
+  def heading=(heading:float)
+    @heading = heading
+  end
+
+  def heading:float
+    @heading
+  end
+
+  def invalidate
+    @view.invalidate
+  end
+
   def onCreate(state)
     super(state)
     @sensors = SensorManager(getSystemService(Context.SENSOR_SERVICE))
-    @listener = CompassListener.new
-    setContentView(CompassView.new(self))
+    @view = CompassView.new(self)
+    setContentView(@view)
+
+    @listener = CompassListener.new(self)
   end
 
   def onResume
-    Log.d("Ferrante Nav", "Resumed")
+    Log.d(@tag, "Resumed")
     super()
     @sensors.registerListener(@listener,
                               SensorManager.SENSOR_ORIENTATION,
                               SensorManager.SENSOR_DELAY_GAME)
   end
 
-  def onStop
-    Log.d("Ferrante Nav", "Stopped")
+  def onPause
+    Log.d(@tag, "Stopped")
     super()
     @sensors.unregisterListener(@listener)
   end
@@ -37,15 +53,20 @@ end
 class CompassListener
   implements SensorListener
 
+  def initialize(nav:Navigator)
+    @nav = nav
+  end
+
   def onSensorChanged(sensor, values)
-    @values = values
-    # @view.invalidate
+    @nav.invalidate
+    @nav.heading = values[0]
   end
 end
 
 class CompassView < View
   def initialize(context:Context)
     super(context)
+    @nav = Navigator(context)
     @paint = Paint.new(Paint.ANTI_ALIAS_FLAG)
     @paint.setColor(Color.WHITE)
 
@@ -59,6 +80,7 @@ class CompassView < View
   def onDraw(canvas)
     canvas.drawColor(Color.BLACK)
     canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
+    canvas.rotate(-@nav.heading)
     canvas.drawPath(@path, @paint)
   end
 end

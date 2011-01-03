@@ -5,15 +5,16 @@
 *** DONE cancel invitation
 *** DONE wait for response (poll)
 *** DONE move on to navigate when confirmed
-*** TODO launch locator when confirmed
+*** TODO launch Locate when confirmed
 ** Navigate Activity
 *** DONE show compass
-*** TODO point compass north
+*** DONE point compass north
 *** TODO point to fixed location
-*** TODO move target point
+*** TODO save heading between reorientation
+*** TODO get target from Locate
 ** Locate Service
-*** TODO get target from server
 *** TODO send location to server
+*** TODO get target from server
 *** TODO do this periodically
 ** Follow Activity
 *** TODO confirm
@@ -64,3 +65,4 @@
 * Ugly things to clean up
 ** Auto-generate resources from yaml, etc.
 ** all the this=self stuff
+** json from an inputstream
