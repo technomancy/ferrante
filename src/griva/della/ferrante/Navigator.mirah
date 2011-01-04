@@ -80,7 +80,15 @@ class CompassView < View
   def onDraw(canvas)
     canvas.drawColor(Color.BLACK)
     canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
-    canvas.rotate(-@nav.heading)
+    canvas.rotate(target_angle)
     canvas.drawPath(@path, @paint)
+  end
+
+  def target_angle:float
+    dx = 33.229801 / 33.224801
+    dy = -117.24413 / -117.24313
+    Log.d("CompassView", "Calculated heading: #{dx}, #{dy}, #{Math.atan(dx / dy)}")
+    target_heading = Math.atan(dx / dy)
+    float(target_heading - @nav.heading)
   end
 end

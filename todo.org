@@ -9,9 +9,9 @@
 ** Navigate Activity
 *** DONE show compass
 *** DONE point compass north
-*** TODO point to fixed location
-*** TODO save heading between reorientation
+*** DONE point to fixed location
 *** TODO get target from Locate
+*** TODO save heading between reorientation
 ** Locate Service
 *** TODO send location to server
 *** TODO get target from server
