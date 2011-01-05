@@ -1,7 +1,6 @@
 import android.app.Activity
 import android.util.Log
 import android.text.ClipboardManager
-import android.content.Context
 import android.app.AlertDialog
 import android.os.Message
 import android.content.Intent
@@ -101,7 +100,6 @@ class Start < Activity
         Thread.sleep 10000 # ten seconds
         code = http.execute(HttpGet.new(link)).getStatusLine.getStatusCode
         if code == 200
-          # TODO: start locator
           this.navigate
           # TODO: back from navigate shouldn't go to start
           this.finish

@@ -10,12 +10,14 @@
 *** DONE show compass
 *** DONE point compass north
 *** DONE point to fixed location
-*** TODO get target from Locate
+*** DONE get target from Locate
 *** TODO save heading between reorientation
 ** Locate Service
+*** DONE get location from device
 *** TODO send location to server
 *** TODO get target from server
 *** TODO do this periodically
+*** TODO show notification
 ** Follow Activity
 *** TODO confirm
 *** TODO cancel

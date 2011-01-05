@@ -1,6 +1,7 @@
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.content.Intent
 
 import android.view.View
 import android.graphics.Canvas
@@ -31,6 +32,7 @@ class Navigator < Activity
     @sensors = SensorManager(getSystemService(Context.SENSOR_SERVICE))
     @view = CompassView.new(self)
     setContentView(@view)
+    @locator = startService(Intent.new(self, Locator.class))
 
     @listener = CompassListener.new(self)
   end
@@ -85,10 +87,14 @@ class CompassView < View
   end
 
   def target_angle:float
-    dx = 33.229801 / 33.224801
-    dy = -117.24413 / -117.24313
-    Log.d("CompassView", "Calculated heading: #{dx}, #{dy}, #{Math.atan(dx / dy)}")
-    target_heading = Math.atan(dx / dy)
-    float(target_heading - @nav.heading)
+    if Locator.location && Locator.target
+      lat_diff = Locator.location.getLatitude - Locator.target.getLatitude
+      lng_diff = Locator.location.getLongitude - Locator.target.getLongitude
+      target_heading = Math.toDegrees(Math.atan(lat_diff / lng_diff))
+      # float(target_heading - @nav.heading)
+      float(target_heading)
+    else
+      float(0)
+    end
   end
 end
