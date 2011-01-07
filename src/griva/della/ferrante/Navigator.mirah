@@ -11,6 +11,7 @@ import android.graphics.Path
 
 import android.hardware.SensorListener
 import android.hardware.SensorManager
+import android.location.Location
 
 class Navigator < Activity
   @tag = "Ferrante Nav"
@@ -32,7 +33,7 @@ class Navigator < Activity
     @sensors = SensorManager(getSystemService(Context.SENSOR_SERVICE))
     @view = CompassView.new(self)
     setContentView(@view)
-    @locator = startService(Intent.new(self, Locator.class))
+    startService(Intent.new(self, Locator.class))
 
     @listener = CompassListener.new(self)
   end
@@ -49,6 +50,19 @@ class Navigator < Activity
     Log.d(@tag, "Stopped")
     super()
     @sensors.unregisterListener(@listener)
+  end
+
+  def onCreateOptionsMenu(m)
+    # TODO: can't access R.menu.menu for some reason
+    getMenuInflater.inflate(0x7f050000, m)
+    true
+  end
+
+  def onOptionsItemSelected(menu_item)
+    # TODO: send HTTP DELETE to link
+    stopService(Intent.new(self, Locator.class))
+    finish
+    true
   end
 end
 
@@ -83,7 +97,7 @@ class CompassView < View
     if Locator.location && Locator.target
       canvas.drawColor(Color.BLACK)
       canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
-      canvas.rotate(target_angle(Locator.location, Locator.target))
+      canvas.rotate(angle(Locator.location, Locator.target))
       canvas.drawPath(@path, @paint)
     else
       # TODO: draw "getting location" message
@@ -91,10 +105,10 @@ class CompassView < View
   end
 
   def angle(location:Location, target:Location)
-    target_angle + @nav.heading
+    target_angle(location, target) - @nav.heading
   end
 
-  def target_angle:float(location:Location, target:Location)
+  def target_angle(location:Location, target:Location)
     lat_diff = location.getLatitude - target.getLatitude
     lng_diff = location.getLongitude - target.getLongitude
     target_heading = Math.toDegrees(Math.atan(lat_diff / lng_diff))

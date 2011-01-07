@@ -5,12 +5,13 @@
 *** DONE cancel invitation
 *** DONE wait for response (poll)
 *** DONE move on to navigate when confirmed
-*** TODO launch Locate when confirmed
+*** DONE launch Locate when confirmed
 ** Navigate Activity
 *** DONE show compass
 *** DONE point compass north
 *** DONE point to fixed location
 *** DONE get target from Locate
+*** DONE implement cancel
 *** TODO save heading between reorientation
 ** Locate Service
 *** DONE get location from device
@@ -41,8 +42,6 @@
 
 * Data Model
 ** id
-** leader_token
-** follower_token
 ** started_at
 ** leader_name
 ** followed_at
