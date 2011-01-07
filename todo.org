@@ -14,9 +14,9 @@
 *** TODO save heading between reorientation
 ** Locate Service
 *** DONE get location from device
-*** TODO send location to server
-*** TODO get target from server
-*** TODO do this periodically
+*** DONE send location to server
+*** DONE get target from server
+*** DONE do this periodically
 *** TODO show notification
 ** Follow Activity
 *** TODO confirm
