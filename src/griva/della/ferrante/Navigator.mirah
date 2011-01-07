@@ -80,21 +80,29 @@ class CompassView < View
   end
 
   def onDraw(canvas)
-    canvas.drawColor(Color.BLACK)
-    canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
-    canvas.rotate(target_angle)
-    canvas.drawPath(@path, @paint)
+    if Locator.location && Locator.target
+      canvas.drawColor(Color.BLACK)
+      canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
+      canvas.rotate(target_angle(Locator.location, Locator.target))
+      canvas.drawPath(@path, @paint)
+    else
+      # TODO: draw "getting location" message
+    end
   end
 
-  def target_angle:float
-    if Locator.location && Locator.target
-      lat_diff = Locator.location.getLatitude - Locator.target.getLatitude
-      lng_diff = Locator.location.getLongitude - Locator.target.getLongitude
-      target_heading = Math.toDegrees(Math.atan(lat_diff / lng_diff))
-      # float(target_heading - @nav.heading)
-      float(target_heading)
+  def angle(location:Location, target:Location)
+    target_angle + @nav.heading
+  end
+
+  def target_angle:float(location:Location, target:Location)
+    lat_diff = location.getLatitude - target.getLatitude
+    lng_diff = location.getLongitude - target.getLongitude
+    target_heading = Math.toDegrees(Math.atan(lat_diff / lng_diff))
+    # Probably a better way to do this, but atan is weird with 2 negatives
+    if lat_diff < 0 && lng_diff < 0
+      180 + float(target_heading)
     else
-      float(0)
+      float(target_heading)
     end
   end
 end
