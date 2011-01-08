@@ -63,3 +63,4 @@
 ** Auto-generate resources from yaml, etc.
 ** all the this=self stuff
 ** json from an inputstream
+** appengine-sdk gem doesn't place appcfg.sh on path
