@@ -46,11 +46,9 @@ class Locator < Service
       while true do
         Log.d("Ferrante Locator Thread", "Started")
         if Locator.location
-          Log.d("Ferrante Locator Thread", "got location; httping")
           response = http.execute(this.post_request(link))
-          Log.d("Ferrante Locator Thread", "HTTP executed")
           stream = response.getEntity.getContent
-          # TODO: detect deleted
+          # TODO: check for 410
           payload = JSONObject.new(BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine)
           target = Location.new("Ferrante Server")
           target.setLatitude payload.getDouble("latitude")
@@ -65,6 +63,7 @@ class Locator < Service
   end
 
   def post_request(link:String)
+    # TODO: switch to query params
     body = JSONObject.new
     body.put("latitude", Locator.location.getLatitude)
     body.put("longitude", Locator.location.getLongitude)
@@ -74,6 +73,7 @@ class Locator < Service
   end
 
   def onDestroy
+    # TODO: send DELETE to server
     super()
     Log.d(@tag, "Stopped")
     @manager.removeUpdates(@listener)

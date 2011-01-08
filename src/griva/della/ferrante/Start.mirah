@@ -63,6 +63,7 @@ class Start < Activity
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
+      # TODO: send name
       this.response = http.execute(HttpPost.new("http://p.hagelb.org/start"))
       Log.i("Ferrante", "received response")
     end
@@ -129,9 +130,11 @@ class Start < Activity
   end
   
   def cancel
+    # TODO: factor this out
     http = @http
     link = @link
     thread = Thread.new do
+      # TODO: add name
       http.execute(HttpDelete.new(link))
     end
     thread.start

@@ -12,6 +12,7 @@
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+      <!-- TODO: add intent filter for ferrante URL -->
     </activity>
     <!-- TODO: configChanges doesn't do anything? -->
     <activity android:name="Navigator"
