@@ -50,6 +50,7 @@ class Locator < Service
           response = http.execute(this.post_request(link))
           Log.d("Ferrante Locator Thread", "HTTP executed")
           stream = response.getEntity.getContent
+          # TODO: detect deleted
           payload = JSONObject.new(BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine)
           target = Location.new("Ferrante Server")
           target.setLatitude payload.getDouble("latitude")

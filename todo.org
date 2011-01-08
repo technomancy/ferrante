@@ -27,16 +27,16 @@
 ** POST /start
    body: {"name": "leader dude"}
    response: {"link": "http://ferrante-della-griva.appspot.com/8024802"}
-** GET /$TOKEN
+** GET /$ID
    - Triggers Follow activity
    - May confirm, which goes to POST
    - May cancel, which goes to DELETE
-** POST /$TOKEN {"name", "follower dude"}
+** POST /$ID {"name", "follower dude"}
    - sets follower_name and followed_at
-** PUT /$TOKEN {"lat": 44.2424, "lng": 133.9014}
+** PUT /$ID {"lat": 44.2424, "lng": 133.9014}
    - sets your lat, lng, ping_at
    - returns other's lat, lng, name
-** DELETE /$TOKEN {"name": "follower dude"}
+** DELETE /$ID {"name": "follower dude"}
    - confirms name is either leader or follower
    - sets ended_at, ended_by
 
@@ -46,12 +46,8 @@
 ** leader_name
 ** followed_at
 ** follower_name
-** leader_lat
-** leader_lng
-** leader_ping_at
-** follower_lat
-** follower_lng
-** follower_ping_at
+** leader_location_id
+** follower_location_id
 ** ended_at
 ** ended_by
 

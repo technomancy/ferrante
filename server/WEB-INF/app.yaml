@@ -1,0 +1,15 @@
+application: ferrante
+version: 1.0
+runtime: java
+public_root: /public
+
+resource_files:
+  - exclude: /build/**
+
+handlers:
+  - url: /start
+    servlet: controllers.StartController
+    name: start
+  - url: /follow/*
+    servlet: controllers.FollowController
+    name: follow

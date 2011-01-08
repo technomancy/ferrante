@@ -1,0 +1,19 @@
+<!-- Generated from app.yaml. Do not edit. -->
+<web-app version='2.5' xmlns='http://java.sun.com/xml/ns/javaee'>
+  <servlet>
+    <servlet-name>start</servlet-name>
+    <servlet-class>controllers.StartController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>start</servlet-name>
+    <url-pattern>/start</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>follow</servlet-name>
+    <servlet-class>controllers.FollowController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>follow</servlet-name>
+    <url-pattern>/follow/*</url-pattern>
+  </servlet-mapping>
+</web-app>
