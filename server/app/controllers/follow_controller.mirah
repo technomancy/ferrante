@@ -1,6 +1,8 @@
 import dubious.*
 import models.*
 import java.util.Date
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 class FollowController < ApplicationController
   def doGet(request, response)
@@ -40,23 +42,18 @@ class FollowController < ApplicationController
       response.setStatus 412 # precondition failed
       response
     else
-      # TODO: this returns incorrect results; apparently "bob" != "bob"
-      if request.getParameter("name") == f.leader_name
-        location = f.leader_location
-        target = f.follower_location
-        target_name = f.follower_name
+      # TODO: == returns incorrect results; apparently "bob" == "bob" is false
+      if f.leader_name.equals(request.getParameter("name"))
+        update_location f.leader_location, request
+        write_target f.follower_location, f.follower_name, response
+        response
+      elsif f.follower_name.equals(request.getParameter("name")) 
+        update_location f.follower_location, request
+        write_target f.leader_location, f.leader_name, response
+        response
       else
-        location = f.follower_location
-        target = f.leader_location
-        target_name = f.leader_name
-      end
-      location.latitude = request.getParameter("latitude")
-      location.longitude = request.getParameter("longitude")
-      location.save
-      if target.latitude != 0 and target.longitude != 0
-        response.getWriter.write("{\"latitude\": #{target.latitude}, " +
-                                 "\"longitude\": #{target.longitude}, " +
-                                 "\"name\": #{target_name}}")
+        response.setStatus 403
+        response
       end
       response
     end
@@ -67,5 +64,20 @@ class FollowController < ApplicationController
     f.ended_by = request.getParameter("name")
     f.ended_at = Date.new
     f.save
+  end
+
+  def update_location(location:Location, request:HttpServletRequest)
+    location.latitude = request.getParameter("latitude")
+    location.longitude = request.getParameter("longitude")
+    location.save
+  end
+
+  def write_target(target:Location, target_name:String,
+                   response:HttpServletResponse)
+    if target.latitude != 0 and target.longitude != 0
+      response.getWriter.write("{\"latitude\": #{target.latitude}, " +
+                               "\"longitude\": #{target.longitude}, " +
+                               "\"name\": #{target_name}}")
+    end
   end
 end

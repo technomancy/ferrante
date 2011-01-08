@@ -12,6 +12,7 @@ class Follow < Model
   property :ended_at, Date
   property :ended_by, String
 
+  # TODO: this gets compiled out of order; tries this before Location.mirah
   def leader_location
     if @leader_location_id == 0
       l = Location.new
@@ -34,14 +35,6 @@ class Follow < Model
     else
       Location.get(@follower_location_id)
     end
-  end
-
-  def follower_location=(l:Location)
-    @follower_location_id = l.key.getId
-  end
-
-  def leader_location=(l:Location)
-    @leader_location_id = l.key.getId
   end
 
   def id
