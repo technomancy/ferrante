@@ -26,11 +26,13 @@ import android.widget.EditText
 import griva.della.ferrante.Navigator
 
 class Start < Activity
-  @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-  @tag = "Ferrante/Start"
-  @start_url = "http://192.168.42.238:8080/start"
-
   def onCreate(state)
+    # TODO: these are null now if placed in class body.
+    @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
+    @tag = "Ferrante"
+    @start_url = "http://192.168.42.238:8080/start"
+    @poll_delay = 5000
+
     super state
     @outer = LinearLayout.new(self)
     @outer.setOrientation(LinearLayout.VERTICAL)
@@ -59,11 +61,12 @@ class Start < Activity
     http = @http
     this = self
     start_url = @start_url
+    # TODO: get user name from system
+    name = "Alice"
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
-      # TODO: send name
-      this.response = http.execute(HttpPost.new(start_url))
+      this.response = http.execute(HttpPost.new("#{start_url}?name=#{name}"))
     end
 
     thread.start && thread.join
@@ -97,22 +100,29 @@ class Start < Activity
     http = @http
     link = @link
     this = self
+    poll_delay = @poll_delay
     @start_button.setText("Waiting for follower...")
     @wait_thread = Thread.new do
       while true do
-        Thread.sleep 10000 # ten seconds
+        Thread.sleep poll_delay
         code = http.execute(HttpGet.new(link)).getStatusLine.getStatusCode
+        Log.i("Ferrante", "Got #{code} from #{link}")
         if code == 200
           this.navigate(link)
           # TODO: back from navigate shouldn't go to start
           this.finish
+          break
         elsif code == 410
           this.gone
-        elsif code != 204
+          break
+        elsif code != 412
           raise "Got unexpected status: #{code}"
+          break
         end
+        # TODO: second time through this loop it freezes
       end
     end
+    @wait_thread.start
   end
 
   def navigate(link:String)
