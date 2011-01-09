@@ -6,9 +6,19 @@ import javax.servlet.http.HttpServletResponse
 
 class FollowController < ApplicationController
   def doGet(request, response)
-    # TODO: render "install ferrante app" message
-    response.getWriter.write("Install the Ferrante app for Android; it's great")
-    response
+    f = Follow.get(Integer.parseInt(request.getParameter("id")))
+    if !f
+      response.setStatus 404 # not found
+      response
+    elsif f.ended_at
+      response.setStatus 410 # gone
+      response
+    elsif !f.followed_at
+      response.setStatus 412
+      response
+    else
+      response
+    end
   end
 
   # Follow
@@ -70,8 +80,8 @@ class FollowController < ApplicationController
   end
 
   def update_location(location:Location, request:HttpServletRequest)
-    location.latitude = request.getParameter("latitude")
-    location.longitude = request.getParameter("longitude")
+    location.latitude = Double.valueOf(request.getParameter("latitude"))
+    location.longitude = Double.valueOf(request.getParameter("longitude"))
     location.save
   end
 
@@ -80,7 +90,7 @@ class FollowController < ApplicationController
     if target.latitude != 0 and target.longitude != 0
       response.getWriter.write("{\"latitude\": #{target.latitude}, " +
                                "\"longitude\": #{target.longitude}, " +
-                               "\"name\": #{target_name}}")
+                               "\"name\": \"#{target_name}\"}")
     end
   end
 end
