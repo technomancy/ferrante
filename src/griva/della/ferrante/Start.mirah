@@ -25,15 +25,14 @@ import android.widget.EditText
 import griva.della.ferrante.Navigator
 
 class Start < Activity
-  # USER_AGENT = "Ferrante (http://github.com/technomancy/ferrante)"
-  # TAG = "Ferrante/Start"
-  @@user_agent = "Ferrante"
+  @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
+  @tag = "Ferrante/Start"
 
   def onCreate(state)
     super state
     @outer = LinearLayout.new(self)
     @outer.setOrientation(LinearLayout.VERTICAL)
-    @http = AndroidHttpClient.newInstance("Ferrante")
+    @http = AndroidHttpClient.newInstance(@user_agent)
 
     # FIXME: support horizontal view
     # FIXME: switch to resources for strings?
@@ -65,7 +64,7 @@ class Start < Activity
     thread = Thread.new do
       # TODO: send name
       this.response = http.execute(HttpPost.new("http://p.hagelb.org/start"))
-      Log.i("Ferrante", "received response")
+      Log.i(@tag, "received response")
     end
 
     thread.start && thread.join
@@ -79,7 +78,7 @@ class Start < Activity
   end
 
   def wait_for_follower(response:HttpResponse)
-    Log.i("Ferrante", "waiting")
+    Log.i(@tag, "waiting")
     this = self
     stream = response.getEntity.getContent
     payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine

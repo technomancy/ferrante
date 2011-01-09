@@ -6,6 +6,7 @@
 *** DONE wait for response (poll)
 *** DONE move on to navigate when confirmed
 *** DONE launch Locate when confirmed
+*** TODO make it fit for horizontal orientation, low-res
 ** Navigate Activity
 *** DONE show compass
 *** DONE point compass north
