@@ -1,5 +1,9 @@
 import android.app.Service
 import android.content.Context
+import android.content.Intent
+import android.app.NotificationManager
+import android.app.Notification
+import android.app.PendingIntent
 import android.util.Log
 
 import android.net.http.AndroidHttpClient
@@ -15,6 +19,8 @@ import java.io.BufferedReader
 import android.location.LocationManager
 import android.location.LocationListener
 import android.location.Location
+
+import griva.della.ferrante.Navigator
 
 class Locator < Service
   @tag = "Ferrante"
@@ -51,6 +57,9 @@ class Locator < Service
                                     @min_time, @min_distance, @listener)
     @manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                     @min_time, @min_distance, @listener)
+
+    add_notification
+
     http = AndroidHttpClient.newInstance(@user_agent)
     ping_latency = @ping_latency
     this = self
@@ -82,17 +91,36 @@ class Locator < Service
     @thread.start
   end
 
-  def update_request(link:String, location:Location)
-    link = "#{link}&name=#{@name}&latitude=#{location.getLatitude}" +
+  def update_request(locator:Locator, location:Location)
+    link = "#{locator.link}&name=#{@name}&latitude=#{location.getLatitude}" +
       "&longitude=#{location.getLongitude}"
     Log.d("Ferrante", "updating to: #{link}")
     HttpPut.new(link)
   end
 
+  def add_notification
+    # TODO: this will launch new Navigators instead of activating existing
+    intent = Intent.new(self, Navigator.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    Log.d("Ferrante", "Adding notification: #{intent}")
+    # TODO: add name of followee to message?
+    message = "Navigating..."
+    # TODO: use R class; compiler can't resolve it
+    icon = 0x7f020001
+    notification = Notification.new(icon, message, System.currentTimeMillis)
+    notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT |
+      Notification.FLAG_NO_CLEAR
+    notification.setLatestEventInfo(getApplicationContext,
+                                    "Ferrante", message,
+                                    PendingIntent.getActivity(self, 0, intent, 0))
+
+    @notifier = NotificationManager(getSystemService(Context.NOTIFICATION_SERVICE))
+    @notifier.notify(0, notification)
+  end
+
   def onDestroy
-    # TODO: send DELETE to server
     super()
     Log.d(@tag, "Stopped")
+    @notifier.cancelAll
     @manager.removeUpdates(@listener)
   end
 

@@ -35,8 +35,12 @@ class Navigator < Activity
     @view = CompassView.new(self)
     setContentView(@view)
 
-    Log.d("Ferrante", "Nav intent data: #{getIntent.getData}")
-    startService(Intent.new(self, Locator.class).setData(getIntent.getData))
+    # if started from Start or Follow, we'll need to start
+    # Locator. otherwise we were started from notification panel.
+    if getIntent.getData
+      Log.d("Ferrante", "Nav intent data: #{getIntent.getData}")
+      startService(Intent.new(self, Locator.class).setData(getIntent.getData))
+    end
 
     @listener = CompassListener.new(self)
   end
