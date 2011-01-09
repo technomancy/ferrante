@@ -1,6 +1,6 @@
-local.properties
-bin
+/local.properties
+/bin
 *jar
 *class
-server/WEB-INF/appengine-generated/local_db.bin
-server/WEB-INF/appengine-web.xml
+/server/WEB-INF/appengine-generated
+/server/WEB-INF/appengine-web.xml

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+curl -XPOST "http://localhost:8080/follow?id=$1&name=bob"
+curl -I -XPUT "http://localhost:8080/follow?id=$1&name=bob&latitude=43&longitude=-120"
