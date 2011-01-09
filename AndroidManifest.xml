@@ -12,7 +12,18 @@
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
-      <!-- TODO: add intent filter for ferrante URL -->
+    </activity>
+    <activity android:name="Follow" android:label="@string/app_name">
+      <intent-filter>
+        <action android:name="android.intent.category.BROWSABLE" />
+        <!-- BROWSABLE too here? -->
+        <category android:name="android.intent.category.DEFAULT" />
+        <!-- change host to run against another server 
+             android:host="ferrante-della-griva.appspot.com"
+        -->
+        <data android:scheme="http"
+              android:path="/follow/*" />
+      </intent-filter>
     </activity>
     <!-- TODO: configChanges doesn't do anything? -->
     <activity android:name="Navigator"

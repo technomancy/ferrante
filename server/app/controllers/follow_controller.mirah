@@ -21,6 +21,9 @@ class FollowController < ApplicationController
     elsif f.followed_at
       response.setStatus 409 # conflict
       response
+    elsif f.ended_at
+      response.setStatus 410
+      response
     else
       f.followed_at = Date.new
       f.follower_name = request.getParameter("name")
