@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.os.Message
 import android.content.Intent
 
+import android.net.Uri
 import android.net.http.AndroidHttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -27,6 +28,7 @@ import griva.della.ferrante.Navigator
 class Start < Activity
   @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
   @tag = "Ferrante/Start"
+  @start_url = "http://192.168.42.238:8080/start"
 
   def onCreate(state)
     super state
@@ -46,9 +48,6 @@ class Start < Activity
     @start_button.setMinimumHeight(75)
     @start_button.setOnClickListener {|v| this.start }
 
-    # for debugging only; remove
-    add_button("Navigate").setOnClickListener {|v| this.navigate }
-    
     setContentView(@outer)
   end
 
@@ -59,12 +58,12 @@ class Start < Activity
 
     http = @http
     this = self
+    start_url = @start_url
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
       # TODO: send name
-      this.response = http.execute(HttpPost.new("http://p.hagelb.org/start"))
-      Log.i(@tag, "received response")
+      this.response = http.execute(HttpPost.new(start_url))
     end
 
     thread.start && thread.join
@@ -87,6 +86,10 @@ class Start < Activity
 
     add_button("Copy").setOnClickListener {|v| this.copy }
     add_button("Cancel").setOnClickListener {|v| this.cancel }
+    # For debugging only; allows you to skip waiting for follower
+    link = @link
+    add_button("Navigate").setOnClickListener { |v| this.navigate(link) }
+
     poll(@link)
   end
 
@@ -100,7 +103,7 @@ class Start < Activity
         Thread.sleep 10000 # ten seconds
         code = http.execute(HttpGet.new(link)).getStatusLine.getStatusCode
         if code == 200
-          this.navigate
+          this.navigate(link)
           # TODO: back from navigate shouldn't go to start
           this.finish
         elsif code == 410
@@ -112,8 +115,8 @@ class Start < Activity
     end
   end
 
-  def navigate
-    startActivity(Intent.new(self, Navigator.class))
+  def navigate(link:String)
+    startActivity(Intent.new(self, Navigator.class).setData(Uri.parse(link)))
   end
 
   def gone
@@ -154,11 +157,11 @@ class Start < Activity
     button
   end
 
-  def onSaveInstanceState(bundle)
-    # TODO: write
-  end
+  # def onSaveInstanceState(bundle)
+  #   # TODO: write
+  # end
 
-  def onRestoreInstanceState(bundle)
-    # TODO: write
-  end
+  # def onRestoreInstanceState(bundle)
+  #   # TODO: write
+  # end
 end

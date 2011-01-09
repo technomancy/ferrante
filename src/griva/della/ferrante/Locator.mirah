@@ -3,7 +3,7 @@ import android.content.Context
 import android.util.Log
 
 import android.net.http.AndroidHttpClient
-import org.apache.http.client.methods.HttpPost
+import org.apache.http.client.methods.HttpPut
 import org.apache.http.HttpResponse
 import org.apache.http.entity.StringEntity
 import org.json.JSONStringer
@@ -28,6 +28,11 @@ class Locator < Service
   @min_distance = 0
   @ping_latency = 1000
 
+  def onStartCommand(intent, flags, start_id)
+    @link = intent.getData.toString
+    Service.START_REDELIVER_INTENT
+  end
+
   def onCreate
     super()
     Log.d(@tag, "Created.")
@@ -38,7 +43,7 @@ class Locator < Service
     @manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                     @min_time, @min_distance, @listener)
     http = AndroidHttpClient.newInstance(@user_agent)
-    link = "http://p.hagelb.org/1"
+    link = @link
     ping_latency = @ping_latency
     this = self
 
@@ -46,9 +51,9 @@ class Locator < Service
       while true do
         Log.d("Ferrante Locator Thread", "Started")
         if Locator.location
-          response = http.execute(this.post_request(link))
+          response = http.execute(this.update_request(link))
           stream = response.getEntity.getContent
-          # TODO: check for 410
+          # TODO: check for non-200 status
           payload = JSONObject.new(BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine)
           target = Location.new("Ferrante Server")
           target.setLatitude payload.getDouble("latitude")
@@ -62,12 +67,12 @@ class Locator < Service
     @thread.start
   end
 
-  def post_request(link:String)
+  def update_request(link:String)
     # TODO: switch to query params
     body = JSONObject.new
     body.put("latitude", Locator.location.getLatitude)
     body.put("longitude", Locator.location.getLongitude)
-    post = HttpPost.new(link)
+    post = HttpPut.new(link)
     post.setEntity(StringEntity.new(body.toString))
     post
   end

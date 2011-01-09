@@ -13,6 +13,8 @@ import android.hardware.SensorListener
 import android.hardware.SensorManager
 import android.location.Location
 
+import android.net.Uri
+
 class Navigator < Activity
   @tag = "Ferrante Nav"
 
@@ -28,12 +30,17 @@ class Navigator < Activity
     @view.invalidate
   end
 
+  def startActivity(intent)
+    super(intent)
+    startService(Intent.new(self, Locator.class).setData(intent.getData))
+    Log.d(@tag, "Intent data: #{intent.getData}")
+  end
+
   def onCreate(state)
     super(state)
     @sensors = SensorManager(getSystemService(Context.SENSOR_SERVICE))
     @view = CompassView.new(self)
     setContentView(@view)
-    startService(Intent.new(self, Locator.class))
 
     @listener = CompassListener.new(self)
   end
