@@ -17,7 +17,7 @@ import android.location.LocationListener
 import android.location.Location
 
 class Locator < Service
-  @tag = "Ferrante Locator"
+  @tag = "Ferrante"
   @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
   @min_time = 10000
   @min_distance = 10
@@ -30,12 +30,21 @@ class Locator < Service
 
   def onStartCommand(intent, flags, start_id)
     @link = intent.getData.toString
+    Log.d(@tag, "onStartCommand link: #{@link}")
     Service.START_REDELIVER_INTENT
   end
 
   def onCreate
     super()
-    Log.d(@tag, "Created.")
+    # TODO: mirahc bug? Can't set these in class body
+    @tag = "Ferrante"
+    @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
+    @min_time = 10000
+    @min_distance = 10
+    @ping_latency = 10000
+
+    @name = "Alice" # TODO: get name from system
+
     @manager = LocationManager(getSystemService(Context.LOCATION_SERVICE))
     @listener = Listener.new
     @manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
@@ -43,22 +52,23 @@ class Locator < Service
     @manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                     @min_time, @min_distance, @listener)
     http = AndroidHttpClient.newInstance(@user_agent)
-    link = @link
     ping_latency = @ping_latency
     this = self
 
     @thread = Thread.new do
+      Log.d("Ferrante", "Locator thread started.")
       while true do
-        Log.d("Ferrante Locator Thread", "Started")
         if Locator.location
-          response = http.execute(this.update_request(link))
+          response = http.execute(this.update_request(this.link, Locator.location))
           stream = response.getEntity.getContent
           # TODO: check for non-200 status
-          payload = JSONObject.new(BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine)
+          payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
+          Log.d("Ferrante", "Locator thread got response: #{payload}")
+          target_json = JSONObject.new(payload)
           target = Location.new("Ferrante Server")
-          target.setLatitude payload.getDouble("latitude")
-          target.setLongitude payload.getDouble("longitude")
-          Log.d("Ferrante Locator Thread", "Got target: #{target}")
+          target.setLatitude target_json.getDouble("latitude")
+          target.setLongitude target_json.getDouble("longitude")
+          Log.d("Ferrante", "Locator thread got target: #{target}")
           Locator.target = target
         end
         Thread.sleep ping_latency
@@ -67,14 +77,11 @@ class Locator < Service
     @thread.start
   end
 
-  def update_request(link:String)
-    # TODO: switch to query params
-    body = JSONObject.new
-    body.put("latitude", Locator.location.getLatitude)
-    body.put("longitude", Locator.location.getLongitude)
-    post = HttpPut.new(link)
-    post.setEntity(StringEntity.new(body.toString))
-    post
+  def update_request(link:String, location:Location)
+    link = "#{link}&name=#{@name}&latitude=#{location.getLatitude}" +
+      "&longitude=#{location.getLongitude}"
+    Log.d("Ferrante", "updating to: #{link}")
+    HttpPut.new(link)
   end
 
   def onDestroy
@@ -82,6 +89,10 @@ class Locator < Service
     super()
     Log.d(@tag, "Stopped")
     @manager.removeUpdates(@listener)
+  end
+
+  def link
+    @link
   end
 
   def self.location=(location:Location)
@@ -105,7 +116,7 @@ class Listener
   implements LocationListener
 
   def onLocationChanged(location)
-    Log.d("Ferrante Location", "Location: #{location}")
+    Log.d("Ferrante", "Location: #{location}")
     Locator.location = location
   end
 end
