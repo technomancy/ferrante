@@ -59,17 +59,22 @@ class Locator < Service
       Log.d("Ferrante", "Locator thread started.")
       while true do
         if Locator.location
-          response = http.execute(this.update_request(this.link, Locator.location))
-          stream = response.getEntity.getContent
-          # TODO: check for non-200 status
-          payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
-          Log.d("Ferrante", "Locator thread got response: #{payload}")
-          target_json = JSONObject.new(payload)
-          target = Location.new("Ferrante Server")
-          target.setLatitude target_json.getDouble("latitude")
-          target.setLongitude target_json.getDouble("longitude")
-          Log.d("Ferrante", "Locator thread got target: #{target}")
-          Locator.target = target
+          response = http.execute(this.update_request(this, Locator.location))
+          code = response.getStatusLine.getStatusCode
+          if code == 200
+            stream = response.getEntity.getContent
+            reader = BufferedReader.new(InputStreamReader.new(stream, "UTF-8"))
+            payload = reader.readLine
+            Log.d("Ferrante", "Locator thread got response: #{payload}")
+            target_json = JSONObject.new(payload)
+            target = Location.new("Ferrante Server")
+            target.setLatitude target_json.getDouble("latitude")
+            target.setLongitude target_json.getDouble("longitude")
+            Locator.target = target
+            Log.d("Ferrante", "Locator thread got target: #{target}")
+          else
+            Log.w("Ferrante", "Got status code: #{code}")
+          end
         end
         Thread.sleep ping_latency
       end
