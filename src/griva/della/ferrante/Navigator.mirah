@@ -16,8 +16,6 @@ import android.location.Location
 import android.net.Uri
 
 class Navigator < Activity
-  @tag = "Ferrante Nav"
-
   def heading=(heading:float)
     @heading = heading
   end
@@ -30,23 +28,20 @@ class Navigator < Activity
     @view.invalidate
   end
 
-  def startActivity(intent)
-    super(intent)
-    startService(Intent.new(self, Locator.class).setData(intent.getData))
-    Log.d(@tag, "Intent data: #{intent.getData}")
-  end
-
   def onCreate(state)
     super(state)
+    @tag = "Ferrante"
     @sensors = SensorManager(getSystemService(Context.SENSOR_SERVICE))
     @view = CompassView.new(self)
     setContentView(@view)
+
+    Log.d("Ferrante", "Nav intent data: #{getIntent.getData}")
+    startService(Intent.new(self, Locator.class).setData(getIntent.getData))
 
     @listener = CompassListener.new(self)
   end
 
   def onResume
-    Log.d(@tag, "Resumed")
     super()
     @sensors.registerListener(@listener,
                               SensorManager.SENSOR_ORIENTATION,
@@ -54,7 +49,6 @@ class Navigator < Activity
   end
 
   def onPause
-    Log.d(@tag, "Stopped")
     super()
     @sensors.unregisterListener(@listener)
   end
