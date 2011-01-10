@@ -30,7 +30,7 @@ class Start < Activity
     # TODO: these are null now if placed in class body.
     @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
     @tag = "Ferrante"
-    @start_url = "http://192.168.42.238:8080/start"
+    @start_url = "http://ferrante-della-griva.appspot.com/start"
     @poll_delay = 5000
 
     super state
