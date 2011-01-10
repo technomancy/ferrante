@@ -61,12 +61,10 @@ class Start < Activity
     http = @http
     this = self
     start_url = @start_url
-    # TODO: get user name from system
-    name = "Alice"
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
-      this.response = http.execute(HttpPost.new("#{start_url}?name=#{name}"))
+      this.response = http.execute(HttpPost.new("#{start_url}?name=leader"))
     end
 
     thread.start && thread.join
@@ -84,7 +82,7 @@ class Start < Activity
     this = self
     stream = response.getEntity.getContent
     payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
-    @link = JSONObject.new(payload).getString("link")
+    @link = JSONObject.new(payload).getString("link") + "&name=leader"
     @outer.addView(EditText.new(self).setText(@link))
 
     add_button("Copy").setOnClickListener {|v| this.copy }
@@ -92,7 +90,7 @@ class Start < Activity
     # For debugging only; allows you to skip waiting for follower
     link = @link
     http = @http
-    follow_thread = Thread.new { http.execute(HttpPost.new("#{link}&name=bob")) }
+    follow_thread = Thread.new { http.execute(HttpPost.new("#{link}&name=follower")) }
     add_button("Navigate").setOnClickListener { |v| follow_thread.start }
 
     poll(@link)
@@ -128,7 +126,8 @@ class Start < Activity
   end
 
   def navigate(link:String)
-    startActivity(Intent.new(self, Navigator.class).setData(Uri.parse(link)))
+    intent = Intent.new(self, Navigator.class)
+    startActivity(intent.setData(Uri.parse("#{link}&name=leader")))
   end
 
   def gone
@@ -148,8 +147,7 @@ class Start < Activity
     http = @http
     link = @link
     thread = Thread.new do
-      # TODO: add name
-      http.execute(HttpDelete.new(link))
+      http.execute(HttpDelete.new("#{link}&name=leader"))
     end
     thread.start
   ensure

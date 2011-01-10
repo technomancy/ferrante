@@ -7,14 +7,14 @@ class StartController < ApplicationController
   # @base_url = "http://ferrante-della-griva.appspot.com/"
 
   def doPost(request, response)
+    base_url = "http://ferrante-della-griva.appspot.com/"
     f = Follow.new
-    f.leader_name = request.getParameter("name")
     f.started_at = Date.new
     f.save
     response.setContentType("application/json; charset=UTF-8")
     response.setStatus 201
     # TODO: json lib
-    response.getWriter.write("{\"link\": \"http://192.168.42.238:8080/follow?id=#{f.id}\"}")
+    response.getWriter.write("{\"link\": \"http://#{base_url}/follow?id=#{f.id}\"}")
     response
   end
 

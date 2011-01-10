@@ -29,11 +29,6 @@ class Locator < Service
   @min_distance = 10
   @ping_latency = 10000
 
-  # debug values
-  @min_time = 1000
-  @min_distance = 0
-  @ping_latency = 1000
-
   def onStartCommand(intent, flags, start_id)
     @link = intent.getData.toString
     Log.d(@tag, "onStartCommand link: #{@link}")
@@ -45,9 +40,9 @@ class Locator < Service
     # TODO: mirahc bug? Can't set these in class body
     @tag = "Ferrante"
     @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-    @min_time = 10000
-    @min_distance = 10
-    @ping_latency = 10000
+    @min_time = 1000
+    @min_distance = 0
+    @ping_latency = 1000
 
     @name = "Alice" # TODO: get name from system
 
@@ -94,17 +89,15 @@ class Locator < Service
   end
 
   def update_request(locator:Locator, location:Location)
-    link = "#{locator.link}&name=#{@name}&latitude=#{location.getLatitude}" +
-      "&longitude=#{location.getLongitude}"
-    Log.d("Ferrante", "updating to: #{link}")
-    HttpPut.new(link)
+    loc_str = "latitude=#{location.getLatitude}&longitude=#{location.getLongitude}"
+    Log.d("Ferrante", "updating to: #{link}&#{loc_str}")
+    HttpPut.new("#{link}&#{loc_str}")
   end
 
   def add_notification
     # TODO: this will launch new Navigators instead of activating existing
     intent = Intent.new(self, Navigator.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     Log.d("Ferrante", "Adding notification: #{intent}")
-    # TODO: add name of followee to message?
     message = "Navigating..."
     # TODO: use R class; compiler can't resolve it
     icon = 0x7f020001

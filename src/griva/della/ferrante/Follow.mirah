@@ -17,7 +17,7 @@ import griva.della.ferrante.Navigator
 
 class Follow < Activity
   @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-  @tag = "Ferrante Follow"
+  @tag = "Ferrante"
 
   def startActivity(intent)
     super(intent)
@@ -51,12 +51,11 @@ class Follow < Activity
     link = @link
     this = self
     thread = Thread.new do
-      # TODO: add name
-      response = http.execute(HttpPost.new(link))
+      response = http.execute(HttpPost.new("#{link}&name=follower"))
       if response.getStatusLine.getStatusCode == 204
         this.startActivity(Intent.new(this, Navigator.class))
       else
-        Log.d("Ferrante Follow thread", "Couldn't post: #{response}")
+        Log.d("Ferrante", "Follow thread post failed: #{response}")
         dialog = AlertDialog.new(this).setTitle("Expired")
         message = this.error_message("#{response.getStatusLine.getStatusCode}")
         dialog.setMessage String(message)
@@ -76,10 +75,7 @@ class Follow < Activity
   def cancel
     http = @http
     link = @link
-    thread = Thread.new do
-      # TODO: add name
-      http.execute(HttpDelete.new(link))
-    end
+    thread = Thread.new { http.execute(HttpDelete.new("#{link}&name=follower")) }
     thread.start
   ensure
     finish

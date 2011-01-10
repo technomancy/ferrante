@@ -36,7 +36,6 @@ class FollowController < ApplicationController
       response
     else
       f.followed_at = Date.new
-      f.follower_name = request.getParameter("name")
       f.save
       response.setStatus 204 # no content
       response
@@ -56,13 +55,13 @@ class FollowController < ApplicationController
       response
     else
       # TODO: == returns incorrect results; apparently "bob" == "bob" is false
-      if f.leader_name.equals(request.getParameter("name"))
+      if "leader".equals(request.getParameter("name"))
         update_location f.leader_location, request
-        write_target f.follower_location, f.follower_name, response
+        write_target f.follower_location, response
         response
-      elsif f.follower_name.equals(request.getParameter("name")) 
+      elsif "follower".equals(request.getParameter("name"))
         update_location f.follower_location, request
-        write_target f.leader_location, f.leader_name, response
+        write_target f.leader_location, response
         response
       else
         response.setStatus 403
@@ -85,12 +84,10 @@ class FollowController < ApplicationController
     location.save
   end
 
-  def write_target(target:Location, target_name:String,
-                   response:HttpServletResponse)
+  def write_target(target:Location, response:HttpServletResponse)
     if target.latitude != 0 and target.longitude != 0
       response.getWriter.write("{\"latitude\": #{target.latitude}, " +
-                               "\"longitude\": #{target.longitude}, " +
-                               "\"name\": \"#{target_name}\"}")
+                               "\"longitude\": #{target.longitude}}")
     else
       response.getWriter.write("{}")
     end
