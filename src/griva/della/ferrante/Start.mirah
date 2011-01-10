@@ -91,7 +91,9 @@ class Start < Activity
     add_button("Cancel").setOnClickListener {|v| this.cancel }
     # For debugging only; allows you to skip waiting for follower
     link = @link
-    add_button("Navigate").setOnClickListener { |v| this.navigate(link) }
+    http = @http
+    follow_thread = Thread.new { http.execute(HttpPost.new("#{link}&name=bob")) }
+    add_button("Navigate").setOnClickListener { |v| follow_thread.start }
 
     poll(@link)
   end

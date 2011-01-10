@@ -77,8 +77,10 @@ class Locator < Service
             Log.d("Ferrante", "Locator thread got response: #{payload}")
             target_json = JSONObject.new(payload)
             target = Location.new("Ferrante Server")
-            target.setLatitude target_json.getDouble("latitude")
-            target.setLongitude target_json.getDouble("longitude")
+            if target_json.length > 0
+              target.setLatitude target_json.getDouble("latitude")
+              target.setLongitude target_json.getDouble("longitude")
+            end
             Locator.target = target
             Log.d("Ferrante", "Locator thread got target: #{target}")
           else

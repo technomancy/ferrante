@@ -91,6 +91,8 @@ class FollowController < ApplicationController
       response.getWriter.write("{\"latitude\": #{target.latitude}, " +
                                "\"longitude\": #{target.longitude}, " +
                                "\"name\": \"#{target_name}\"}")
+    else
+      response.getWriter.write("{}")
     end
   end
 end
