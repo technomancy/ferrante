@@ -31,7 +31,7 @@ class Start < Activity
     @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
     @tag = "Ferrante"
     @start_url = "http://ferrante-della-griva.appspot.com/start"
-    @poll_delay = 5000
+    @poll_delay = 10000
 
     super state
     @outer = LinearLayout.new(self)
@@ -55,8 +55,8 @@ class Start < Activity
 
 
   def start
-    @start_button.setText("Starting...")
     @start_button.setEnabled(false)
+    @start_button.setText("Starting...")
 
     http = @http
     this = self
@@ -64,7 +64,7 @@ class Start < Activity
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
-      this.response = http.execute(HttpPost.new("#{start_url}?name=leader"))
+      this.response = http.execute(HttpPost.new("#{start_url}"))
     end
 
     thread.start && thread.join
@@ -82,7 +82,7 @@ class Start < Activity
     this = self
     stream = response.getEntity.getContent
     payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
-    @link = JSONObject.new(payload).getString("link") + "&name=leader"
+    @link = JSONObject.new(payload).getString("link")
     @outer.addView(EditText.new(self).setText(@link))
 
     add_button("Copy").setOnClickListener {|v| this.copy }
@@ -91,7 +91,11 @@ class Start < Activity
     link = @link
     http = @http
     follow_thread = Thread.new { http.execute(HttpPost.new("#{link}&name=follower")) }
-    add_button("Navigate").setOnClickListener { |v| follow_thread.start }
+
+    nav_button = add_button("Navigate").setOnClickListener do |v|
+      follow_thread.start
+      nav_button.setEnabled(false)
+    end
 
     poll(@link)
   end
@@ -105,7 +109,11 @@ class Start < Activity
     @wait_thread = Thread.new do
       while true do
         Thread.sleep poll_delay
-        code = http.execute(HttpGet.new(link)).getStatusLine.getStatusCode
+        Log.d("Ferrante", "Polling for follower...")
+        # TODO: third time through this loop it freezes
+        response = http.execute(HttpGet.new(link))
+        Log.d("Ferrante", "Got response: #{response}")
+        code = response.getStatusLine.getStatusCode
         Log.i("Ferrante", "Got #{code} from #{link}")
         if code == 200
           this.navigate(link)
@@ -119,7 +127,6 @@ class Start < Activity
           raise "Got unexpected status: #{code}"
           break
         end
-        # TODO: second time through this loop it freezes
       end
     end
     @wait_thread.start
