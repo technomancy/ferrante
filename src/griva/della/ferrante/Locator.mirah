@@ -117,6 +117,7 @@ class Locator < Service
     Log.d(@tag, "Stopped")
     @notifier.cancelAll
     @manager.removeUpdates(@listener)
+    @thread.stop
   end
 
   def link

@@ -7,7 +7,7 @@ class StartController < ApplicationController
   # @base_url = "http://ferrante-della-griva.appspot.com/"
 
   def doPost(request, response)
-    base_url = "http://ferrante-della-griva.appspot.com/"
+    base_url = "http://ferrante-della-griva.appspot.com"
     f = Follow.new
     f.started_at = Date.new
     f.save
