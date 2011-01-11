@@ -39,7 +39,8 @@ class Navigator < Activity
     # Locator. otherwise we were started from notification panel.
     if getIntent.getData
       Log.d("Ferrante", "Nav intent data: #{getIntent.getData}")
-      startService(Intent.new(self, Locator.class).setData(getIntent.getData))
+      @locator_intent = Intent.new(self, Locator.class).setData(getIntent.getData)
+      startService(@locator_intent)
     end
 
     @listener = CompassListener.new(self)
@@ -64,8 +65,12 @@ class Navigator < Activity
   end
 
   def onOptionsItemSelected(menu_item)
-    # TODO: send HTTP DELETE to link
-    stopService(Intent.new(self, Locator.class))
+    Log.d(@tag, "Finishing with #{@locator_intent}")
+    begin
+      stopService(@locator_intent)
+    rescue Exception => e
+      Log.d("Ferrante", "Navigator couldn't stop Locator: #{e}")
+    end
     finish
     true
   end
