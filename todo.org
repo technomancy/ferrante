@@ -63,6 +63,7 @@
 ** can't infer double => float
 ** can't refer to nested constants
 ** can't access R resource classes
+** question marks in class method names cause dex failures
 ** appengine_tasks is in mirah instead of dubious; huh?
 *** --address=localhost hardcoded into appengine_tasks.
 * Ugly things to clean up

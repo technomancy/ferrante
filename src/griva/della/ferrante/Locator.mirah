@@ -131,12 +131,12 @@ class Locator < Service
     @link
   end
 
-  def self.valid?(location:Location)
+  def self.valid(location:Location)
     location.getLatitude != 0.0 and location.getLongitude != 0.0
   end
 
   def self.location=(location:Location)
-    @location = location if valid? location
+    @location = location if valid location
   end
 
   def self.location:Location
@@ -144,7 +144,7 @@ class Locator < Service
   end
 
   def self.target=(target:Location)
-    @target = target if valid? target
+    @target = target if valid target
   end
 
   def self.target:Location
