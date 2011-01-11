@@ -45,6 +45,7 @@ class Follow < Activity
   end
 
   def follow
+    disable_buttons
     http = @http
     link = @link
     this = self
@@ -78,11 +79,17 @@ class Follow < Activity
 
   # TODO: share with Start activity
   def cancel
+    disable_buttons
     http = @http
     link = @link
     Log.d("Ferrante", "Cancel: delete to #{link}&name=follower")
     Thread.new { http.execute(HttpDelete.new("#{link}&name=follower")) }.start
     finish
+  end
+
+  def disable_buttons
+    @follow_button.setEnabled(false)
+    @cancel_button.setEnabled(false)
   end
 
   # TODO: share with start
