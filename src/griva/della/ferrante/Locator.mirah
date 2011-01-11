@@ -8,6 +8,7 @@ import android.util.Log
 
 import android.net.http.AndroidHttpClient
 import org.apache.http.client.methods.HttpPut
+import org.apache.http.client.methods.HttpDelete
 import org.apache.http.HttpResponse
 import org.apache.http.entity.StringEntity
 import org.json.JSONStringer
@@ -26,7 +27,6 @@ import griva.della.ferrante.Navigator
 class Locator < Service
   @tag = "Ferrante"
   @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-  @min_time = 10000
   @min_distance = 10
   @ping_latency = 10000
 
@@ -41,22 +41,20 @@ class Locator < Service
     # TODO: mirahc bug? Can't set these in class body
     @tag = "Ferrante"
     @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-    @min_time = 1000
     @min_distance = 0
-    @ping_latency = 1000
+    @ping_latency = 5000
 
-    @name = "Alice" # TODO: get name from system
-
+    @http = AndroidHttpClient.newInstance(@user_agent)
     @manager = LocationManager(getSystemService(Context.LOCATION_SERVICE))
     @listener = Listener.new
     @manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-                                    @min_time, @min_distance, @listener)
+                                    @ping_latency, @min_distance, @listener)
     @manager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                    @min_time, @min_distance, @listener)
+                                    @ping_latency, @min_distance, @listener)
 
     add_notification
 
-    http = AndroidHttpClient.newInstance(@user_agent)
+    http = @http
     ping_latency = @ping_latency
     this = self
 
@@ -121,6 +119,9 @@ class Locator < Service
   def onDestroy
     super()
     Log.d(@tag, "Stopped")
+    http = @http
+    link = @link
+    Thread.new { http.execute(HttpDelete.new(link)) }
     @notifier.cancelAll
     @manager.removeUpdates(@listener)
     @thread.stop
