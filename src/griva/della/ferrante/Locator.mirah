@@ -81,6 +81,7 @@ class Locator < Service
           else
             Log.w("Ferrante", "Got status code: #{code}")
           end
+          response.getEntity.consumeContent rescue nil
         end
         Thread.sleep ping_latency
       end

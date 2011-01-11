@@ -52,20 +52,20 @@ class Follow < Activity
       Log.d("Ferrante", "Following: #{link}&name=follower")
       response = http.execute(HttpPost.new("#{link}&name=follower"))
       code = response.getStatusLine.getStatusCode
+      response.getEntity.consumeContent
       if code == 204
         intent = Intent.new(this, Navigator.class)
         this.startActivity(intent.setData(Uri.parse("#{link}&name=follower")))
         this.finish
       else
-        this.error_dialog(response, code)
+        this.error_dialog(code)
         this.finish
       end
     end
     thread.start
   end
 
-  def error_dialog(response:HttpResponse, code:int)
-    Log.d("Ferrante", "Follow thread post failed: #{response}")
+  def error_dialog(code:int)
     dialog = AlertDialog.new(self).setTitle("Expired")
     dialog.setMessage String(error_message("#{code}"))
   end

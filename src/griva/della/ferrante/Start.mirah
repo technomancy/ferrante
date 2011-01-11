@@ -64,12 +64,14 @@ class Start < Activity
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
-      this.response = http.execute(HttpPost.new("#{start_url}"))
+      response = http.execute(HttpPost.new("#{start_url}"))
+      this.response = response
+      Log.d("Ferrante", "Got response: #{response}")
     end
 
     thread.start && thread.join
 
-    wait_for_follower(@response)
+    wait_for_follower
   end
 
   # FIXME: yeah, switch to futures
@@ -77,20 +79,29 @@ class Start < Activity
     @response = r
   end
 
-  def wait_for_follower(response:HttpResponse)
-    Log.i(@tag, "waiting")
-    this = self
-    stream = response.getEntity.getContent
-    payload = BufferedReader.new(InputStreamReader.new(stream, "UTF-8")).readLine
+  def wait_for_follower
+    Log.i(@tag, "Got link for follower: #{@response}")
+    code = @response.getStatusLine.getStatusCode
+    stream = @response.getEntity.getContent
+    reader = BufferedReader.new(InputStreamReader.new(stream, "UTF-8"))
+    payload = reader.readLine
+    reader.close
+
     @link = JSONObject.new(payload).getString("link")
     @outer.addView(EditText.new(self).setText(@link))
+
+    this = self
 
     add_button("Copy").setOnClickListener {|v| this.copy }
     add_button("Cancel").setOnClickListener {|v| this.cancel }
     # For debugging only; allows you to skip waiting for follower
     link = @link
     http = @http
-    follow_thread = Thread.new { http.execute(HttpPost.new("#{link}&name=follower")) }
+    follow_thread = Thread.new do
+      response = http.execute(HttpPost.new("#{link}&name=follower"))
+      entity = response.getEntity
+      entity && response.getEntity.consumeContent
+    end
 
     nav_button = add_button("Navigate").setOnClickListener do |v|
       follow_thread.start
@@ -114,6 +125,7 @@ class Start < Activity
         response = http.execute(HttpGet.new(link))
         Log.d("Ferrante", "Got response: #{response}")
         code = response.getStatusLine.getStatusCode
+        response.getEntity.consumeContent
         Log.i("Ferrante", "Got #{code} from #{link}")
         if code == 200
           this.navigate(link)
@@ -153,8 +165,10 @@ class Start < Activity
     # TODO: factor this out
     http = @http
     link = @link
+    this = self
     thread = Thread.new do
-      http.execute(HttpDelete.new("#{link}&name=leader"))
+      response = http.execute(HttpDelete.new("#{link}&name=leader"))
+      response.getEntity.consumeContent
     end
     thread.start
   ensure
