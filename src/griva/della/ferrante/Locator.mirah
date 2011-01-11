@@ -152,6 +152,8 @@ class Listener
 
   def onLocationChanged(location)
     Log.d("Ferrante", "Location: #{location}")
-    Locator.location = location
+    if location.getLatitude != 0.0 and location.getLongitude != 0.0
+      Locator.location = location
+    end
   end
 end
