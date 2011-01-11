@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse
 import org.apache.http.entity.StringEntity
 import org.json.JSONStringer
 import org.json.JSONObject
+import java.net.SocketTimeoutException
 
 import java.io.InputStreamReader
 import java.io.BufferedReader
@@ -63,25 +64,29 @@ class Locator < Service
       Log.d("Ferrante", "Locator thread started.")
       while true do
         if Locator.location
-          response = http.execute(this.update_request(this, Locator.location))
-          code = response.getStatusLine.getStatusCode
-          if code == 200
-            stream = response.getEntity.getContent
-            reader = BufferedReader.new(InputStreamReader.new(stream, "UTF-8"))
-            payload = reader.readLine
-            Log.d("Ferrante", "Locator thread got response: #{payload}")
-            target_json = JSONObject.new(payload)
-            target = Location.new("Ferrante Server")
-            if target_json.length > 0
-              target.setLatitude target_json.getDouble("latitude")
-              target.setLongitude target_json.getDouble("longitude")
+          begin
+            response = http.execute(this.update_request(this, Locator.location))
+            code = response.getStatusLine.getStatusCode
+            if code == 200
+              stream = response.getEntity.getContent
+              reader = BufferedReader.new(InputStreamReader.new(stream, "UTF-8"))
+              payload = reader.readLine
+              Log.d("Ferrante", "Locator thread got response: #{payload}")
+              target_json = JSONObject.new(payload)
+              target = Location.new("Ferrante Server")
+              if target_json.length > 0
+                target.setLatitude target_json.getDouble("latitude")
+                target.setLongitude target_json.getDouble("longitude")
+              end
+              Locator.target = target
+              Log.d("Ferrante", "Locator thread got target: #{target}")
+            else
+              Log.w("Ferrante", "Got status code: #{code}")
             end
-            Locator.target = target
-            Log.d("Ferrante", "Locator thread got target: #{target}")
-          else
-            Log.w("Ferrante", "Got status code: #{code}")
+            response.getEntity.consumeContent rescue nil
+          rescue SocketTimeoutException => e
+            Log.w("Ferrante", "Socket timed out.")
           end
-          response.getEntity.consumeContent rescue nil
         end
         Thread.sleep ping_latency
       end
