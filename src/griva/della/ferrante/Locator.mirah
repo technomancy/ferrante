@@ -131,8 +131,12 @@ class Locator < Service
     @link
   end
 
+  def self.valid?(location:Location)
+    location.getLatitude != 0.0 and location.getLongitude != 0.0
+  end
+
   def self.location=(location:Location)
-    @location = location
+    @location = location if valid? location
   end
 
   def self.location:Location
@@ -140,7 +144,7 @@ class Locator < Service
   end
 
   def self.target=(target:Location)
-    @target = target
+    @target = target if valid? target
   end
 
   def self.target:Location
@@ -153,8 +157,6 @@ class Listener
 
   def onLocationChanged(location)
     Log.d("Ferrante", "Location: #{location}")
-    if location.getLatitude != 0.0 and location.getLongitude != 0.0
-      Locator.location = location
-    end
+    Locator.location = location
   end
 end
