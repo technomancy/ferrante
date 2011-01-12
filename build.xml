@@ -64,7 +64,15 @@
     <!-- Execute the Android Setup task that will setup some properties
          specific to the target, and import the build rules files. -->
 
-    <target name="compile" depends="-resource-src, -aidl"
+    <target name="javac" description="Compiles R.java">
+      <exec executable="javac" dir="gen">
+        <arg value="griva/della/ferrante/R.java" />
+        <arg value="-d" />
+        <arg value="../bin/classes/" />
+      </exec>
+    </target>
+
+    <target name="compile" depends="javac, -resource-src, -aidl"
             description="Compiles project's .mirah files into .class files">
       <exec executable="mirahc" dir="src">
         <arg line="-c ${sdk.dir}/platforms/${target-version}/android.jar:../bin/classes/" />

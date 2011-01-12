@@ -103,8 +103,7 @@ class Locator < Service
     intent = Intent.new(self, Navigator.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     Log.d("Ferrante", "Adding notification: #{intent}")
     message = "Navigating..."
-    # TODO: use R class; compiler can't resolve it
-    icon = 0x7f020001
+    icon = R.drawable.icon
     notification = Notification.new(icon, message, System.currentTimeMillis)
     notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT |
       Notification.FLAG_NO_CLEAR

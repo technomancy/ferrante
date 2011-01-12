@@ -59,8 +59,7 @@ class Navigator < Activity
   end
 
   def onCreateOptionsMenu(m)
-    # TODO: can't access R.menu.menu for some reason
-    getMenuInflater.inflate(0x7f050000, m)
+    getMenuInflater.inflate(R.menu.menu, m)
     true
   end
 
