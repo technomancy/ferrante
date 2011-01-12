@@ -66,7 +66,7 @@ class Navigator < Activity
   def onOptionsItemSelected(menu_item)
     Log.d(@tag, "Finishing with #{@locator_intent}")
     begin
-      stopService(@locator_intent)
+      stopService(@locator_intent || Intent.new(self, Locator.class))
     rescue Exception => e
       Log.d("Ferrante", "Navigator couldn't stop Locator: #{e}")
     end

@@ -55,6 +55,7 @@ class Start < Activity
 
 
   def start
+    # TODO: this doesn't get disabled immediately
     @start_button.setEnabled(false)
     @start_button.setText("Starting...")
 

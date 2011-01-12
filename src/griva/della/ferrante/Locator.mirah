@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.os.Bundle
 import android.util.Log
 
+import android.net.Uri
 import android.net.http.AndroidHttpClient
 import org.apache.http.client.methods.HttpPut
 import org.apache.http.client.methods.HttpDelete
@@ -61,7 +62,7 @@ class Locator < Service
 
     @thread = Thread.new do
       Log.d("Ferrante", "Locator thread started.")
-      while true do
+      while !Locator.stopped do
         if Locator.location
           begin
             response = http.execute(this.update_request(this, Locator.location))
@@ -100,8 +101,9 @@ class Locator < Service
   end
 
   def add_notification
-    # TODO: this will launch new Navigators instead of activating existing
-    intent = Intent.new(self, Navigator.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    intent = Intent.new(self, Navigator.class)
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    intent.setData(Uri.parse(@link)) if @link
     Log.d("Ferrante", "Adding notification: #{intent}")
     message = "Navigating..."
     icon = R.drawable.notification
@@ -124,7 +126,7 @@ class Locator < Service
     Thread.new { http.execute(HttpDelete.new(link)) }
     @notifier.cancelAll
     @manager.removeUpdates(@listener)
-    @thread.stop
+    Locator.stop # @thread.stop is unreliable
   end
 
   def link
@@ -149,6 +151,14 @@ class Locator < Service
 
   def self.target:Location
     @target
+  end
+
+  def self.stop
+    @stopped = true
+  end
+
+  def self.stopped
+    @stopped
   end
 end
 
