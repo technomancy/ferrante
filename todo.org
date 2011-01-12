@@ -6,7 +6,6 @@
 *** DONE wait for response (poll)
 *** DONE move on to navigate when confirmed
 *** DONE launch Locate when confirmed
-*** TODO send user name when starting
 *** TODO make it fit for horizontal orientation, low-res
 ** Navigate Activity
 *** DONE show compass
@@ -14,7 +13,7 @@
 *** DONE point to fixed location
 *** DONE get target from Locate
 *** DONE implement cancel
-*** TODO save heading between reorientation
+*** TODO prevent multiple navigation activities from running
 ** Locate Service
 *** DONE get location from device
 *** DONE send location to server
@@ -22,9 +21,8 @@
 *** DONE do this periodically
 *** DONE show notification
 ** Follow Activity
-*** TODO confirm
-*** TODO cancel
-*** TODO send user name when following
+*** DONE confirm
+*** DONE cancel
 
 * Server
 ** POST /start

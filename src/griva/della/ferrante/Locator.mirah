@@ -4,6 +4,7 @@ import android.content.Intent
 import android.app.NotificationManager
 import android.app.Notification
 import android.app.PendingIntent
+import android.os.Bundle
 import android.util.Log
 
 import android.net.http.AndroidHttpClient
@@ -103,7 +104,7 @@ class Locator < Service
     intent = Intent.new(self, Navigator.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     Log.d("Ferrante", "Adding notification: #{intent}")
     message = "Navigating..."
-    icon = R.drawable.icon
+    icon = R.drawable.notification
     notification = Notification.new(icon, message, System.currentTimeMillis)
     notification.flags = notification.flags | Notification.FLAG_ONGOING_EVENT |
       Notification.FLAG_NO_CLEAR
@@ -158,4 +159,9 @@ class Listener
     Log.d("Ferrante", "Location: #{location}")
     Locator.location = location
   end
+
+  # yeah, whatever
+  def onProviderEnabled(provider); end
+  def onProviderDisabled(provider); end
+  def onStatusChanged(provider:String, status:int, extras:Bundle); end
 end

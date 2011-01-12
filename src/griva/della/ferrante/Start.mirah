@@ -121,12 +121,10 @@ class Start < Activity
       while true do
         Thread.sleep poll_delay
         Log.d("Ferrante", "Polling for follower...")
-        # TODO: third time through this loop it freezes
         response = http.execute(HttpGet.new(link))
         Log.d("Ferrante", "Got response: #{response}")
         code = response.getStatusLine.getStatusCode
         response.getEntity.consumeContent
-        Log.i("Ferrante", "Got #{code} from #{link}")
         if code == 200
           this.navigate(link)
           # TODO: back from navigate shouldn't go to start
