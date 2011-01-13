@@ -13,7 +13,8 @@
 *** DONE point to fixed location
 *** DONE get target from Locate
 *** DONE implement cancel
-*** TODO prevent multiple navigation activities from running
+*** DONE prevent multiple navigation activities from running
+*** TODO stop when other user is done
 ** Locate Service
 *** DONE get location from device
 *** DONE send location to server

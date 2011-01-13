@@ -123,6 +123,9 @@ class Locator < Service
     Log.d(@tag, "Stopped")
     http = @http
     link = @link
+    Locator.unstop
+    Locator.target = nil
+    Locator.location = nil
     Thread.new { http.execute(HttpDelete.new(link)) }
     @notifier.cancelAll
     @manager.removeUpdates(@listener)
@@ -138,7 +141,7 @@ class Locator < Service
   end
 
   def self.location=(location:Location)
-    @location = location if valid location
+    @location = location if !location or valid location
   end
 
   def self.location:Location
@@ -146,7 +149,7 @@ class Locator < Service
   end
 
   def self.target=(target:Location)
-    @target = target if valid target
+    @target = target if !target or valid target
   end
 
   def self.target:Location
@@ -155,6 +158,10 @@ class Locator < Service
 
   def self.stop
     @stopped = true
+  end
+
+  def self.unstop
+    @stopped = false
   end
 
   def self.stopped
