@@ -54,6 +54,7 @@ class Follow < Activity
       response = http.execute(HttpPost.new("#{link}&name=follower"))
       code = response.getStatusLine.getStatusCode
       response.getEntity.consumeContent rescue nil
+      Log.d("Ferrante", "Got response code #{code}")
       if code == 204
         intent = Intent.new(this, Navigator.class)
         this.startActivity(intent.setData(Uri.parse("#{link}&name=follower")))

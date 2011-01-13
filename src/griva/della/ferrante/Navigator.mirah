@@ -108,9 +108,21 @@ class CompassView < View
       canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
       canvas.rotate(angle(Locator.location, Locator.target))
       canvas.drawPath(@path, @paint)
+      write_location(canvas, Locator.location, Locator.target)
     else
-      # TODO: draw "getting location" message
+      canvas.drawText("Acquiring Location...", float(10.0), float(20.0), @paint)
     end
+  end
+
+  def write_location(canvas:Canvas, location:Location, target:Location)
+    canvas.drawText(location_string(location), float(-50.0), float(60.0), @paint)
+    canvas.drawText(location_string(target), float(-50.0), float(-45.0), @paint)
+  end
+
+  def location_string(l:Location)
+    # TODO: what on earth is wrong with String.format?
+    # String.format("%0.5f, %0.5f", Double(l.getLatitude), Double(l.getLongitude))
+    "#{l.getLatitude}, #{l.getLongitude}"
   end
 
   def angle(location:Location, target:Location)
