@@ -26,19 +26,17 @@
 
 * Server
 ** POST /start
-   body: {"name": "leader dude"}
-   response: {"link": "http://ferrante-della-griva.appspot.com/8024802"}
+   response: {"link": "http://ferrante-della-griva.appspot.com/follow?id=8024802"}
 ** GET /$ID
    - Triggers Follow activity
    - May confirm, which goes to POST
    - May cancel, which goes to DELETE
-** POST /$ID {"name", "follower dude"}
-   - sets follower_name and followed_at
-** PUT /$ID {"lat": 44.2424, "lng": 133.9014}
+** POST /$ID
+   - sets followed_at
+** PUT /$ID?latitude=44.2424&longitude=133.9014&name=follower
    - sets your lat, lng, ping_at
-   - returns other's lat, lng, name
-** DELETE /$ID {"name": "follower dude"}
-   - confirms name is either leader or follower
+   - returns other's lat, lng
+** DELETE /$ID?name=leader
    - sets ended_at, ended_by
 
 * Data Model

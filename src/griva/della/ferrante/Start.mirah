@@ -99,14 +99,14 @@ class Start < Activity
     link = @link
     http = @http
     follow_thread = Thread.new do
-      response = http.execute(HttpPost.new("#{link}&name=follower"))
+      response = http.execute(HttpPost.new(link))
       entity = response.getEntity
       entity && response.getEntity.consumeContent
     end
 
-    nav_button = add_button("Navigate").setOnClickListener do |v|
+    fake_button = add_button("Fake Follower").setOnClickListener do |v|
       follow_thread.start
-      nav_button.setEnabled(false)
+      fake_button.setEnabled(false)
     end
 
     poll(@link)
@@ -145,7 +145,8 @@ class Start < Activity
 
   def navigate(link:String)
     intent = Intent.new(self, Navigator.class)
-    startActivity(intent.setData(Uri.parse("#{link}&name=leader")))
+    intent.setData(Uri.parse("#{link}&name=leader"))
+    startActivity(intent)
   end
 
   def gone
