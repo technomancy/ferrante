@@ -15,8 +15,6 @@ import org.json.JSONObject
 
 import java.io.InputStreamReader
 import java.io.BufferedReader
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -24,6 +22,8 @@ import android.widget.Button
 import android.widget.EditText
 
 import griva.della.ferrante.Navigator
+import griva.della.ferrante.Locator
+import android.location.Location
 
 class Start < Activity
   def onCreate(state)
@@ -106,6 +106,7 @@ class Start < Activity
 
     fake_button = add_button("Fake Follower").setOnClickListener do |v|
       follow_thread.start
+      Locator.target = Location.new("Fake").setLatitude(43.0001).setLongitude(-122.001)
       fake_button.setEnabled(false)
     end
 
