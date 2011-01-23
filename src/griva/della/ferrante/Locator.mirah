@@ -24,8 +24,6 @@ import android.location.LocationManager
 import android.location.LocationListener
 import android.location.Location
 
-import griva.della.ferrante.Navigator
-
 class Locator < Service
   @tag = "Ferrante"
   @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
@@ -101,7 +99,7 @@ class Locator < Service
   end
 
   def add_notification
-    intent = Intent.new(self, Navigator.class)
+    intent = Intent.new(self, Class.forName("ferrante.della.griva.Navigator"))
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     intent.setData(Uri.parse(@link)) if @link
     Log.d("Ferrante", "Adding notification: #{intent}")

@@ -21,17 +21,18 @@ import android.widget.TextView
 import android.widget.Button
 import android.widget.EditText
 
-import griva.della.ferrante.Navigator
-import griva.della.ferrante.Locator
 import android.location.Location
 
 class Start < Activity
+  @foo = "foo"
   def onCreate(state)
     # TODO: these are null now if placed in class body.
     @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
     @tag = "Ferrante"
     @start_url = "http://ferrante-della-griva.appspot.com/start"
     @poll_delay = 10000
+
+    Log.d("Ferrante", "foo: #{@foo}")
 
     super state
     @outer = LinearLayout.new(self)
@@ -106,7 +107,8 @@ class Start < Activity
 
     fake_button = add_button("Fake Follower").setOnClickListener do |v|
       follow_thread.start
-      Locator.target = Location.new("Fake").setLatitude(43.0001).setLongitude(-122.001)
+      fake_location = Location.new("Fake").setLatitude(43.0001).setLongitude(-122.001)
+      # Locator.target = fake_location
       fake_button.setEnabled(false)
     end
 
@@ -145,7 +147,7 @@ class Start < Activity
   end
 
   def navigate(link:String)
-    intent = Intent.new(self, Navigator.class)
+    intent = Intent.new(self, Class.forName("ferrante.della.griva.Navigator"))
     intent.setData(Uri.parse("#{link}&name=leader"))
     startActivity(intent)
   end

@@ -14,8 +14,6 @@ import android.widget.TextView
 import android.widget.Button
 import android.widget.EditText
 
-import griva.della.ferrante.Navigator
-
 class Follow < Activity
   def onCreate(state)
     super(state)
@@ -56,7 +54,7 @@ class Follow < Activity
       response.getEntity.consumeContent rescue nil
       Log.d("Ferrante", "Got response code #{code}")
       if code == 204
-        intent = Intent.new(this, Navigator.class)
+        intent = Intent.new(this, Class.forName("ferrante.della.griva.Navigator"))
         this.startActivity(intent.setData(Uri.parse("#{link}&name=follower")))
         this.finish
       else
@@ -73,9 +71,13 @@ class Follow < Activity
   end
 
   def error_message(code:String)
-    { "404" => "Bad link.",
-      "409" => "Link has already been used.",
-      "410" => "Link has expired." }[code]
+    if code == "404"
+      "Bad link."
+    elsif code == "409"
+      "Link has already been used."
+    elsif code == "410"
+      "Link has expired."
+    end
   end
 
   # TODO: share with Start activity
