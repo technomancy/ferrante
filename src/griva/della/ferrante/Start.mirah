@@ -108,7 +108,7 @@ class Start < Activity
     fake_button = add_button("Fake Follower").setOnClickListener do |v|
       follow_thread.start
       fake_location = Location.new("Fake").setLatitude(43.0001).setLongitude(-122.001)
-      # Locator.target = fake_location
+      Locator.target = fake_location
       fake_button.setEnabled(false)
     end
 
@@ -147,7 +147,7 @@ class Start < Activity
   end
 
   def navigate(link:String)
-    intent = Intent.new(self, Class.forName("ferrante.della.griva.Navigator"))
+    intent = Intent.new(self, Class.forName("griva.della.ferrante.Navigator"))
     intent.setData(Uri.parse("#{link}&name=leader"))
     startActivity(intent)
   end

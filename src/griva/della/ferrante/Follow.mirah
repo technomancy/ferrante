@@ -54,7 +54,7 @@ class Follow < Activity
       response.getEntity.consumeContent rescue nil
       Log.d("Ferrante", "Got response code #{code}")
       if code == 204
-        intent = Intent.new(this, Class.forName("ferrante.della.griva.Navigator"))
+        intent = Intent.new(this, Class.forName("griva.della.ferrante.Navigator"))
         this.startActivity(intent.setData(Uri.parse("#{link}&name=follower")))
         this.finish
       else

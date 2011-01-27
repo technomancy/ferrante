@@ -99,7 +99,7 @@ class Locator < Service
   end
 
   def add_notification
-    intent = Intent.new(self, Class.forName("ferrante.della.griva.Navigator"))
+    intent = Intent.new(self, Class.forName("griva.della.ferrante.Navigator"))
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     intent.setData(Uri.parse(@link)) if @link
     Log.d("Ferrante", "Adding notification: #{intent}")
