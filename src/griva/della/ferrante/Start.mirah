@@ -108,7 +108,10 @@ class Start < Activity
     fake_button = add_button("Fake Follower").setOnClickListener do |v|
       follow_thread.start
       fake_location = Location.new("Fake").setLatitude(43.0001).setLongitude(-122.001)
-      Locator.target = fake_location
+      # TODO: fix compilation order in mirahc
+      # temporary workaround: compile with this line commented out,
+      # then uncomment it and recompile.
+      # Locator.target = fake_location
       fake_button.setEnabled(false)
     end
 
