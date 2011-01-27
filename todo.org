@@ -1,5 +1,4 @@
 * Client
-** TODO compilation order
 ** TODO stability
 ** TODO Android 2.0 compatibility
 ** TODO about screen
@@ -54,7 +53,6 @@
    - sets ended_at, ended_by
 ** TODO all links should fall back to splash for browser
 ** TODO share code for error cases
-** TODO better routing
 ** TODO use JSON lib
 ** TODO resolve string equality in follow controller
 * Data Model
