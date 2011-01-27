@@ -1,0 +1,46 @@
+* {
+    font-family: "Bitstream Charter", serif;
+}
+
+body {
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1em;
+    width: 800px;
+}
+
+a { 
+    text-decoration: none;
+    color: #777;
+}
+
+a:hover { 
+    text-decoration: underline;
+}
+
+#blurb {
+    padding: 1em;
+    font-size: 125%;
+}
+
+#install {
+    padding: 5em 0 5em 9em;
+}
+
+#qrcode {
+    margin-top: 1em;
+    clear: right;
+    float: right;
+}
+
+#sidebar {
+    float: right;
+}
+
+#phones img {
+    padding: 1em 5em;
+}
+
+#footer {
+    font-size: 80%;
+}

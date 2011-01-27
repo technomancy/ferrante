@@ -17,9 +17,4 @@ class StartController < ApplicationController
     response.getWriter.write("{\"link\": \"#{base_url}/follow?id=#{f.id}\"}")
     response
   end
-
-  def doGet(request, response)
-    # TODO: informational thingy
-    response.getWriter.write("Wilkommen")
-  end
 end
