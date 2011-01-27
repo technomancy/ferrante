@@ -1,4 +1,13 @@
 * Client
+** TODO compilation order
+** TODO stability
+** TODO Android 2.0 compatibility
+** TODO about screen
+** TODO use resources for strings
+** HTTP Helper
+*** TODO unify calls across components
+*** TODO consistent error handling/messages
+*** TODO use futures where appropriate
 ** Start Activity
 *** DONE start button
 *** DONE show link
@@ -14,6 +23,8 @@
 *** DONE get target from Locate
 *** DONE implement cancel
 *** DONE prevent multiple navigation activities from running
+*** TODO menu icons
+*** TODO distance indicator
 *** TODO stop when other user is done
 ** Locate Service
 *** DONE get location from device
@@ -21,6 +32,8 @@
 *** DONE get target from server
 *** DONE do this periodically
 *** DONE show notification
+*** TODO better notification icon
+*** TODO class-level setters: best way to communicate between components?
 ** Follow Activity
 *** DONE confirm
 *** DONE cancel
@@ -39,7 +52,11 @@
    - returns other's lat, lng
 ** DELETE /$ID?name=leader
    - sets ended_at, ended_by
-
+** TODO all links should fall back to splash for browser
+** TODO share code for error cases
+** TODO better routing
+** TODO use JSON lib
+** TODO resolve string equality in follow controller
 * Data Model
 ** id
 ** started_at
