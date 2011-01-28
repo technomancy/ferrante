@@ -14,7 +14,7 @@ class StartController < ApplicationController
     response.setContentType("application/json; charset=UTF-8")
     response.setStatus 201
     # TODO: json lib
-    response.getWriter.write("{\"link\": \"#{base_url}/follow?id=#{f.id}\"}")
+    response.getWriter.write("{\"link\": \"#{base_url}/follow/#{f.id}\"}")
     response
   end
 end

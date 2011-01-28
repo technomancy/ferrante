@@ -5,66 +5,53 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class FollowController < ApplicationController
-  def doGet(request, response)
-    f = Follow.get(Integer.parseInt(request.getParameter("id")))
-    if !f
-      response.setStatus 404 # not found
-      response
-    elsif f.ended_at
-      response.setStatus 410 # gone
-      response
-    elsif !f.followed_at
-      response.setStatus 412
-      response
-    else
-      response
+  def setup(request:HttpServletRequest, response:HttpServletResponse,
+            need_followed:boolean)
+    @follow = Follow.get(Params.new(request).id)
+
+    if !@follow
+      response.sendError 404 # not found
+      false
+    elsif @follow.ended_at
+      response.sendError 410 # gone
+      false
+    elsif need_followed and !@follow.followed_at
+      response.sendError 412 # precondition failed
+      false
+    elsif !need_followed and @follow.followed_at
+      response.sendError 409 # conflict
+      false
     end
+    true
+  end
+
+  def doGet(request, response)
+    setup(request, response, true)
   end
 
   # Follow
   def doPost(request, response)
-    # TODO: parseInt shouldn't be necessary, I think?
-    f = Follow.get(Integer.parseInt(request.getParameter("id")))
-    if !f
-      response.setStatus 404 # not found
-      response
-    elsif f.followed_at
-      response.setStatus 409 # conflict
-      response
-    elsif f.ended_at
-      response.setStatus 410
-      response
-    else
-      f.followed_at = Date.new
-      f.save
+    if setup(request, response, false)
+      @follow.followed_at = Date.new
+      @follow.save
       response.setStatus 204 # no content
       response
     end
   end
 
   def doPut(request, response)
-    f = Follow.get(Integer.parseInt(request.getParameter("id")))
-    if !f
-      response.setStatus 404 # not found
-      response
-    elsif f.ended_at
-      response.setStatus 410 # gone
-      response
-    elsif !f.followed_at
-      response.setStatus 412 # precondition failed
-      response
-    else
+    if setup(request, response, true)
       # TODO: == returns incorrect results; apparently "bob" == "bob" is false
       if "leader".equals(request.getParameter("name"))
-        update_location f.leader_location, request
-        write_target f.follower_location, response
+        update_location @follow.leader_location, request
+        write_target @follow.follower_location, response
         response
       elsif "follower".equals(request.getParameter("name"))
-        update_location f.follower_location, request
-        write_target f.leader_location, response
+        update_location @follow.follower_location, request
+        write_target @follow.leader_location, response
         response
       else
-        response.setStatus 403
+        response.sendError 403
         response
       end
       response
@@ -72,10 +59,11 @@ class FollowController < ApplicationController
   end
 
   def doDelete(request, response)
-    f = Follow.get(Integer.parseInt(request.getParameter("id")))
-    f.ended_by = request.getParameter("name")
-    f.ended_at = Date.new
-    f.save
+    if setup(request, response, true)
+      @follow.ended_by = request.getParameter("name")
+      @follow.ended_at = Date.new
+      @follow.save
+    end
   end
 
   def update_location(location:Location, request:HttpServletRequest)
@@ -85,6 +73,7 @@ class FollowController < ApplicationController
   end
 
   def write_target(target:Location, response:HttpServletResponse)
+    response.setContentType("application/json; charset=UTF-8")
     if target.latitude != 0 and target.longitude != 0
       response.getWriter.write("{\"latitude\": #{target.latitude}, " +
                                "\"longitude\": #{target.longitude}}")
