@@ -1,8 +1,8 @@
 * Client
-** TODO stability
-** TODO Android 2.0 compatibility
-** TODO about screen
 ** TODO use resources for strings
+** TODO about screen
+** TODO Android 2.0 compatibility
+** TODO stability
 ** HTTP Helper
 *** TODO unify calls across components
 *** TODO consistent error handling/messages
@@ -36,7 +36,6 @@
 ** Follow Activity
 *** DONE confirm
 *** DONE cancel
-
 * Server
 ** POST /start
    response: {"link": "http://ferrante-della-griva.appspot.com/follow?id=8024802"}
@@ -51,8 +50,8 @@
    - returns other's lat, lng
 ** DELETE /$ID?name=leader
    - sets ended_at, ended_by
+** DONE share code for error cases
 ** TODO all links should fall back to splash for browser
-** TODO share code for error cases
 ** TODO use JSON lib
 ** TODO resolve string equality in follow controller
 * Data Model
