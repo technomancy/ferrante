@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Ferrante</string>
+    <string name="user_agent">Ferrante (http://github.com/technomancy/ferrante)</string>
+    <string name="start_url">http://ferrante-della-griva.appspot.com/start</string>
+    <string name="tag">Ferrante</string>
+
+    <string name="start_label">Start</string>
+    <string name="starting_label">Starting...</string>
+    <string name="copy_label">Copy</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="waiting_label">Waiting for follower...</string>
+
+    <string name="cancel_title">Gone</string>
+    <string name="cancel_message">The other person canceled.</string>
 </resources>

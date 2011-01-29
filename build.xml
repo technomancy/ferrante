@@ -72,7 +72,7 @@
       </exec>
     </target>
 
-    <target name="compile" depends="javac, -resource-src, -aidl"
+    <target name="compile" depends="-resource-src, -aidl, javac"
             description="Compiles project's .mirah files into .class files">
       <exec executable="mirahc" dir="src">
         <arg line="-c ${sdk.dir}/platforms/${target-version}/android.jar:../bin/classes/" />

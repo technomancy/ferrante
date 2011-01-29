@@ -24,15 +24,11 @@ import android.widget.EditText
 import android.location.Location
 
 class Start < Activity
-  @foo = "foo"
   def onCreate(state)
-    # TODO: these are null now if placed in class body.
-    @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-    @tag = "Ferrante"
-    @start_url = "http://ferrante-della-griva.appspot.com/start"
+    @user_agent = get_string(R.string.user_agent)
+    @start_url = get_string(R.string.start_url)
     @poll_delay = 10000
-
-    Log.d("Ferrante", "foo: #{@foo}")
+    @tag = get_string(R.string.tag)
 
     super state
     @outer = LinearLayout.new(self)
@@ -43,11 +39,11 @@ class Start < Activity
     # FIXME: switch to resources for strings?
     @title = TextView.new(self)
     @title.setGravity(1)
-    @title.setTextSize(float(40)).setText("Ferrante")
+    @title.setTextSize(float(40)).setText(get_string(R.string.app_name))
     @outer.addView(@title)
 
     this = self
-    @start_button = add_button("Start")
+    @start_button = add_button(get_string(R.string.start_label))
     @start_button.setMinimumHeight(75)
     @start_button.setOnClickListener {|v| this.start }
 
@@ -56,9 +52,9 @@ class Start < Activity
 
 
   def start
-    # TODO: this doesn't get disabled immediately
     @start_button.setEnabled(false)
-    @start_button.setText("Starting...")
+    @start_button.setText(get_string(R.string.starting_label))
+    @outer.invalidate
 
     http = @http
     this = self
@@ -66,9 +62,7 @@ class Start < Activity
 
     # FIXME: this is awful; should use futures
     thread = Thread.new do
-      response = http.execute(HttpPost.new("#{start_url}"))
-      this.response = response
-      Log.d("Ferrante", "Got response: #{response}")
+      this.response = http.execute(HttpPost.new(start_url))
     end
 
     thread.start && thread.join
@@ -93,24 +87,13 @@ class Start < Activity
     @outer.addView(EditText.new(self).setText(@link))
 
     this = self
-
-    add_button("Copy").setOnClickListener {|v| this.copy }
-    add_button("Cancel").setOnClickListener {|v| this.cancel }
-    # For debugging only; allows you to skip waiting for follower
     link = @link
-    http = @http
-    follow_thread = Thread.new do
-      response = http.execute(HttpPost.new(link))
-      entity = response.getEntity
-      entity && response.getEntity.consumeContent
-    end
 
-    fake_button = add_button("Fake Follower").setOnClickListener do |v|
-      follow_thread.start
-      fake_location = Location.new("Fake").setLatitude(43.0001).setLongitude(-122.001)
-      Locator.target = fake_location
-      fake_button.setEnabled(false)
-    end
+    add_button(get_string(R.string.copy_label)).setOnClickListener {|v| this.copy }
+    add_button(get_string(R.string.cancel_label)).setOnClickListener {|v| this.cancel }
+
+    # TODO: hide unless debug build
+    @fake_button = add_button("Fake Follower").setOnClickListener {|v| this.fake }
 
     poll(@link)
   end
@@ -120,13 +103,13 @@ class Start < Activity
     link = @link
     this = self
     poll_delay = @poll_delay
-    @start_button.setText("Waiting for follower...")
+    @start_button.setText(get_string(R.string.waiting_label))
     @wait_thread = Thread.new do
       while true do
         Thread.sleep poll_delay
         Log.d("Ferrante", "Polling for follower...")
         response = http.execute(HttpGet.new(link))
-        Log.d("Ferrante", "Got response: #{response}")
+        Log.d("Ferrante", "Got response: #{response.getStatusLine.getStatusCode}")
         code = response.getStatusLine.getStatusCode
         response.getEntity.consumeContent
         if code == 200
@@ -148,14 +131,14 @@ class Start < Activity
 
   def navigate(link:String)
     intent = Intent.new(self, Class.forName("griva.della.ferrante.Navigator"))
-    intent.setData(Uri.parse("#{link}&name=leader"))
+    intent.setData(Uri.parse("#{link}?name=leader"))
     startActivity(intent)
   end
 
   def gone
     # TODO: this breaks hard
-    dialog = AlertDialog.new(self).setTitle("Gone")
-    dialog.setMessage "The other person cancelled."
+    dialog = AlertDialog.new(self).setTitle(get_string(R.string.cancel_title))
+    dialog.setMessage get_string(R.string.cancel_message)
     done
   end
 
@@ -170,12 +153,27 @@ class Start < Activity
     link = @link
     this = self
     thread = Thread.new do
-      response = http.execute(HttpDelete.new("#{link}&name=leader"))
+      response = http.execute(HttpDelete.new("#{link}?name=leader"))
       response.getEntity.consumeContent
     end
     thread.start
   ensure
     done
+  end
+
+  def fake
+    http = @http
+    link = @link
+    follow_thread = Thread.new do
+      response = http.execute(HttpPost.new(link))
+      entity = response.getEntity
+      entity && response.getEntity.consumeContent
+    end
+
+    follow_thread.start
+    fake_location = Location.new("Fake").setLatitude(47.0001).setLongitude(-118.001)
+    Locator.target = fake_location
+    @fake_button.setEnabled(false)
   end
 
   # FIXME: why can't we call this finish and call super?
@@ -198,4 +196,9 @@ class Start < Activity
   # def onRestoreInstanceState(bundle)
   #   # TODO: write
   # end
+
+  def get_string(id:int)
+    @r ||= getResources
+    @r.getString(id)
+  end
 end

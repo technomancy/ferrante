@@ -48,14 +48,14 @@ class Follow < Activity
     link = @link
     this = self
     thread = Thread.new do
-      Log.d("Ferrante", "Following: #{link}&name=follower")
-      response = http.execute(HttpPost.new("#{link}&name=follower"))
+      Log.d("Ferrante", "Following: #{link}?name=follower")
+      response = http.execute(HttpPost.new("#{link}?name=follower"))
       code = response.getStatusLine.getStatusCode
       response.getEntity.consumeContent rescue nil
       Log.d("Ferrante", "Got response code #{code}")
       if code == 204
         intent = Intent.new(this, Class.forName("griva.della.ferrante.Navigator"))
-        this.startActivity(intent.setData(Uri.parse("#{link}&name=follower")))
+        this.startActivity(intent.setData(Uri.parse("#{link}?name=follower")))
         this.finish
       else
         this.error_dialog(code)
@@ -85,8 +85,8 @@ class Follow < Activity
     disable_buttons
     http = @http
     link = @link
-    Log.d("Ferrante", "Cancel: delete to #{link}&name=follower")
-    Thread.new { http.execute(HttpDelete.new("#{link}&name=follower")) }.start
+    Log.d("Ferrante", "Cancel: delete to #{link}?name=follower")
+    Thread.new { http.execute(HttpDelete.new("#{link}?name=follower")) }.start
     finish
   end
 
