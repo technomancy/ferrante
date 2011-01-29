@@ -106,9 +106,9 @@ class CompassView < View
     if Locator.location && Locator.target
       canvas.drawColor(Color.BLACK)
       canvas.translate(canvas.getWidth / 2, canvas.getHeight / 2)
-      canvas.rotate(angle(Locator.location, Locator.target))
+      canvas.rotate(float(angle(Locator.location, Locator.target)))
       canvas.drawPath(@path, @paint)
-      write_location(canvas, Locator.location, Locator.target)
+      # write_location(canvas, Locator.location, Locator.target)
     else
       canvas.drawText("Acquiring Location...", float(10.0), float(20.0), @paint)
     end
@@ -116,6 +116,8 @@ class CompassView < View
 
   def write_location(canvas:Canvas, location:Location, target:Location)
     canvas.drawText(location_string(location), float(-50.0), float(60.0), @paint)
+    canvas.drawText("#{target_angle(location, target)}",
+                    float(-50.0), float(-60.0), @paint)
     canvas.drawText(location_string(target), float(-50.0), float(-45.0), @paint)
   end
 
@@ -132,12 +134,6 @@ class CompassView < View
   def target_angle(location:Location, target:Location)
     lat_diff = location.getLatitude - target.getLatitude
     lng_diff = location.getLongitude - target.getLongitude
-    target_heading = Math.toDegrees(Math.atan(lat_diff / lng_diff))
-    # Probably a better way to do this, but atan is weird with 2 negatives
-    if lat_diff < 0 && lng_diff < 0
-      180 + float(target_heading)
-    else
-      float(target_heading)
-    end
+    -(Math.toDegrees(Math.atan2(lat_diff, lng_diff)) + 90)
   end
 end

@@ -1,5 +1,5 @@
 * Client
-** TODO use resources for strings
+** DONE use resources for strings
 ** TODO about screen
 ** TODO Android 2.0 compatibility
 ** TODO stability
