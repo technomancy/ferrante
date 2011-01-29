@@ -1,6 +1,8 @@
 /local.properties
 /bin
+/gen
 *jar
 *class
 /server/WEB-INF/appengine-generated
 /server/WEB-INF/appengine-web.xml
+/server/public/ferrante.apk
