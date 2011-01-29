@@ -25,13 +25,9 @@ import android.location.LocationListener
 import android.location.Location
 
 class Locator < Service
-  @tag = "Ferrante"
-  @user_agent = "Ferrante (http://github.com/technomancy/ferrante)"
-  @min_distance = 10
-  @ping_latency = 10000
-
   def onStartCommand(intent, flags, start_id)
     @link = intent.getData.toString
+    Locator.unstop
     Log.d(@tag, "onStartCommand link: #{@link}")
     Service.START_REDELIVER_INTENT
   end
@@ -85,6 +81,8 @@ class Locator < Service
           rescue SocketTimeoutException => e
             Log.w("Ferrante", "Socket timed out.")
           end
+        else
+          Log.d("Ferrante", "No location yet..."); nil
         end
         Thread.sleep ping_latency
       end
@@ -121,13 +119,13 @@ class Locator < Service
     Log.d(@tag, "Stopped")
     http = @http
     link = @link
-    Locator.unstop
+    Locator.stop
     Locator.target = nil
     Locator.location = nil
     Thread.new { http.execute(HttpDelete.new(link)) }
     @notifier.cancelAll
     @manager.removeUpdates(@listener)
-    Locator.stop # @thread.stop is unreliable
+    @thread.stop
   end
 
   def link
@@ -171,7 +169,7 @@ class Listener
   implements LocationListener
 
   def onLocationChanged(location)
-    Log.d("Ferrante", "Location: #{location}")
+    Log.d("Ferrante", "Location: #{location.getLatitude}, #{location.getLongitude}")
     Locator.location = location
   end
 
