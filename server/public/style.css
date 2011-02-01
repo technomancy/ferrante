@@ -2,6 +2,8 @@
     font-family: "Bitstream Charter", serif;
 }
 
+img { border: 0; }
+
 body {
     margin-left: auto;
     margin-right: auto;

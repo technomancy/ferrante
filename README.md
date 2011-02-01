@@ -10,16 +10,25 @@ Instead of the Java programming language, it's written in
 lightweight but offers some advanced features still lacking in Java.
 
 There is also a small server-side web service under <tt>server/</tt>
-(also written in Mirah) that runs on the Google App Engine to act as
-an mediator between the two devices since they generally cannot
-communicate directly; see http://ferrante-della-griva.appspot.com.
+(also written in Mirah) that
+[runs on the Google App Engine](http://ferrante-della-griva.appspot.com)
+to act as an mediator between the two devices since they generally
+cannot communicate directly.
 
 ## Compiling
 
-You'll need the [Android SDK](http://d.android.com/sdk/) installed
-with the tools/ and platform-tools/ directories on your $PATH. For the
-time being you will also need [ant](http://ant.apache.org). Finally be
-sure to have [JRuby](http://jruby.org) installed with bin/ on your $PATH.
+You'll need the [Android SDK](http://d.android.com/sdk/)
+installed. Run <tt>tools/android</tt> and look under "Available
+packages" for "Android Repository". Choose "SDK Platform Android 2.2,
+revision 8" and the newest "Android SDK Platform-tools". Add the
+tools/ and platform-tools/ directories on your $PATH.  For the time
+being you will also need [ant](http://ant.apache.org) 1.8. On 64-bit
+systems you may need to install 32-bit compatibility libraries
+(ia32-libs on Ubuntu) as
+[some of the Android tools don't ship with 64-bit versions](http://code.google.com/p/android/issues/detail?id=14439).
+
+Finally be sure to have at least version 1.6 of
+[JRuby](http://jruby.org) installed with bin/ on your $PATH.
 
     $ jruby -S gem install mirah
 
