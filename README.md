@@ -27,19 +27,23 @@ systems you may need to install 32-bit compatibility libraries
 (ia32-libs on Ubuntu) as
 [some of the Android tools don't ship with 64-bit versions](http://code.google.com/p/android/issues/detail?id=14439).
 
-Finally be sure to have at least version 1.6 of
-[JRuby](http://jruby.org) installed with bin/ on your $PATH.
+Finally be sure to have at least version 1.6 RC1 of
+[JRuby](http://jruby.org) installed with bin/ on your $PATH. If your
+gem and rake are not from from JRuby, prefix the gem and rake commands
+with jruby -S:
 
-    $ jruby -S gem install mirah
+    $ gem install pindah
 
-Then you can compile:
+Then you can create an apk:
 
-    $ ant debug
+    $ rake debug
 
 This will place <tt>Ferrante-debug.apk</tt> in <tt>bin</tt>, which you
 can install if your device is connected or your emulator is running:
 
-    $ adb install -r bin/Ferrante-debug.apk
+    $ adb install -r bin/Ferrante-debug.apk 
+    # or if you want to rebuild and install at the same time:
+    $ rake install
 
 If you're running the emulator, you can fake out the GPS:
 
@@ -68,4 +72,3 @@ You should have received a copy of the GNU General Public License
 along with GNU Emacs; see the file COPYING.  If not, write to the
 Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.
-
