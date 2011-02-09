@@ -1,4 +1,4 @@
-require "../pindah/lib/pindah"
+require "pindah"
 
 Pindah.spec = { :name => "Ferrante",
   :author => "Phil Hagelberg",
